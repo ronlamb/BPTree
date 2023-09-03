@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="info">
+    <Properties>
+        <Property name="layout">%d [%t] %-5level %logger - %m%n</Property>
+    </Properties>
+    <Appenders>
+        <Console name="LogToConsole" target="SYSTEM_OUT">
+            <PatternLayout pattern="${layout}"/>
+        </Console>
+        <File name="LogFile" fileName="app.log">
+            <PatternLayout pattern="%d %p %c{1.} [%t] %m%n"/>
+        </File>
+    </Appenders>
+    <Loggers>
+        <Logger name="com.mkyong" level="debug" additivity="false">
+            <AppenderRef ref="LogToConsole"/>
+        </Logger>
+        <Root level="info">
+            <AppenderRef ref="LogToConsole"/>
+        </Root>
+    </Loggers>
+<!--    <Appenders>-->
+<!--    </Appenders>-->
+<!--    <Loggers>-->
+<!--        <Logger name="com.mkyong" level="debug" additivity="false">-->
+<!--            <AppenderRef ref="LogToConsole"/>-->
+<!--        </Logger>-->
+<!--        <Root level="error">-->
+<!--            <AppenderRef ref="LogToConsole"/>-->
+<!--        </Root>-->
+<!--    </Loggers>-->
+</Configuration>
