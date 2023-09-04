@@ -181,7 +181,7 @@ public class BPTree<K extends Comparable<K>,V> {
 		while (node != null) {
 			int index = node.keyIndex(oldKey);
 			if (index < 0) {
-				node = null;
+				node = node.parent;
 			} else {
 				node.keys.set(index, newKey);
 				node = node.parent;

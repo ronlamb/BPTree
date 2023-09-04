@@ -92,7 +92,11 @@ public class InternalNode<K extends Comparable<K>, V> extends Node<K,V> {
 			oldRight = children.get(i);
 		}
 		child.leftNode = oldRight;
-		child.rightNode = null;
+
+		/* If not a leaf node then remove right node if at end */
+		if (!(child instanceof LeafNode<K,V>)) {
+			child.rightNode = null;
+		}
 		oldRight.rightNode = child;
 		
 		children.add(child);
