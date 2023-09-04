@@ -64,15 +64,15 @@ public class test_inserts {
     }
 
     List<Integer> orderedList(int start, int end) {
-        return Arrays.stream(IntStream.iterate(1, i-> i<=100, i->i+1).toArray()).boxed().collect(Collectors.toList());
+        return Arrays.stream(IntStream.iterate(1, i-> i<=end, i->i+1).toArray()).boxed().collect(Collectors.toList());
     }
     @Test
     void testRandomInsert() {
         BPTree<Integer, Double> tree = new BPTree<Integer, Double>(25, 75.0);
-        List<Integer> list = orderedList(1, 10000);
+        List<Integer> list = orderedList(1, 10000000);
         Collections.shuffle(list);
         ArrayList<Integer> numbers = new ArrayList<>(list);
-        log.info("Numbers: {}", numbers);
+        //log.info("Numbers: {}", numbers);
         log.info("Running testRandomInsert");
         runTest(tree, numbers);
     }

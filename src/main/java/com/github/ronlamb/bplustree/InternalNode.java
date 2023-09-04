@@ -73,7 +73,7 @@ public class InternalNode<K extends Comparable<K>, V> extends Node<K,V> {
 		// TODO: Do a binary search if keys size > 5
 		for (i = 0; i < keys.size(); i++) {
 			if (key.compareTo(keys.get(i)) <= 0) {
-				log.info("ins loc:  {}", i);
+				log.debug("ins loc:  {}", i);
 
 				keys.add(i,key);
 				child.leftNode = children.get(i);
