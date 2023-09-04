@@ -252,11 +252,20 @@ public class BPTree<K extends Comparable<K>,V> {
 			 *    [ 1, 3]  [ 10, 17, 19]    [ 20, 22, 23]    [ 27, 30, 34 ]  << added, 27
 			 *
 			 */
+			int freeSpace = config.maxBranchRefactor - rightNode.records.size();
+			K oldKey = rightNode.records.get(0).key;
+			rightNode.records.addAll(0, leaf.records.subList(leaf.records.size() - freeSpace,leaf.records.size()));
+			leaf.records.subList(leaf.records.size() - freeSpace,leaf.records.size()).clear();
+			K newKey = rightNode.records.get(0).key;
+			propogateKeyUpwards(leaf.parent, oldKey, newKey);
+
+			/*
 			KeyValue<K,V> record = leaf.records.remove(leaf.records.size()-1);
 			K oldKey = rightNode.records.get(0).key;
 			K newKey = record.key;
 			rightNode.records.add(0, record);
 			propogateKeyUpwards(leaf.parent, oldKey, newKey);
+			 */
 			return true;
 		}
 		return false;
