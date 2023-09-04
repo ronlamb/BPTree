@@ -31,6 +31,10 @@ public class test_inserts {
         assertTrue(stats.leafItems == numbers.size(), "Expected " + numbers.size() + " items but found " + stats.leafItems);
     }
 
+    List<Integer> orderedList(int start, int end) {
+        return Arrays.stream(IntStream.iterate(1, i-> i<=end, i->i+1).toArray()).boxed().collect(Collectors.toList());
+    }
+
     public ArrayList<Integer> createOrderedList(int start, int stop) {
         ArrayList<Integer> numbers = new ArrayList<>();
         for (int i = start; i <= stop ; i++) {
@@ -57,7 +61,11 @@ public class test_inserts {
     }
 
 
-    void testUnorderedInsert() {
+    @Test
+    /**
+     * Unit test pulled from testRandomInsert that failed insert.
+     */
+    void testUnorderedInsert_regression_1() {
         ArrayList<Integer> numbers = new ArrayList<>(Arrays.asList(
                 314, 150, 468, 493, 924, 541, 193, 211, 160, 223, 214, 47, 950, 760, 127, 925, 509, 265, 902, 520, 516, 306, 186, 387,
                 630, 456, 652, 829, 143, 206, 729, 870, 575, 576, 97, 230, 884, 123, 268, 453, 249, 875, 713, 295, 399, 320, 682, 589,
@@ -87,8 +95,19 @@ public class test_inserts {
         runTest(tree, numbers);
     }
 
-    List<Integer> orderedList(int start, int end) {
-        return Arrays.stream(IntStream.iterate(1, i-> i<=end, i->i+1).toArray()).boxed().collect(Collectors.toList());
+
+    /**
+     * Simple unit test that checks unordered inserts of positive and negative
+     * With some consecutive numbers
+     */
+    @Test
+    void testUnorderedInsert_regression_2() {
+        ArrayList<Integer> numbers = new ArrayList<Integer>(Arrays.asList(
+                10, -1, 20, 22, 30, 4, 5, 40, -7, 12, 13, 17, 21
+        ));
+        BPTree<Integer, Double> tree = new BPTree<Integer, Double>(5);
+        log.info("Running testUnorderedInsert");
+        runTest(tree, numbers);
     }
 
     @Test
