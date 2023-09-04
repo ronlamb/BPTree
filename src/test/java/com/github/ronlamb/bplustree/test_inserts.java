@@ -43,7 +43,7 @@ public class test_inserts {
     @Test
     void testOrderedInsert() {
         BPTree<Integer, Double> tree = new BPTree<Integer, Double>(25, 75.0);
-        ArrayList<Integer> numbers = createOrderedList(1, 1000);
+        ArrayList<Integer> numbers = createOrderedList(1, 10000);
         log.info("Running testOrderedInsert");
         runTest(tree, numbers);
     }

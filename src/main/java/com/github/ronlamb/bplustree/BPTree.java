@@ -1,6 +1,7 @@
 package com.github.ronlamb.bplustree;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -215,21 +216,26 @@ public class BPTree<K extends Comparable<K>,V> {
 		}
 
 		if (leftNode != null && leftNode.records.size() < config.maxBranchRefactor) {
-			/*
-			 * MoveLeft:                   [30]
+			/* Move Left single node:
+			 *                            [30]
 			 *                   [ 20,           30 ]
 			 *            [ 10,       20,                30 ]
 			 *    [ 1, 3]  [ 10, 19]    [ 20, 22, 23, 27 ]    [ 30, 34, 35 ]  << added, 27
-             *
+			 *
 			 * Becomes:                   [30]
 			 *                   [ 22,           30 ]
 			 *            [ 10,         22,                30 ]
 			 *    [ 1, 3]  [ 10, 19, 20]   [ 22, 23, 27 ]    [ 30, 34, 35 ]  << added, 27
 			 */
-			KeyValue<K,V> record = leaf.records.remove(0);
-			K oldKey = record.key;
+			/* Get the number of records to copy over to fill left record to 85%
+			 * Save the current head key of the left node, then append to to the left node
+			 * And propagate the new key upwards.
+			 */
+			int freeSpace = config.maxBranchRefactor - leftNode.records.size();
+			K oldKey = leaf.records.get(0).key;
+			leftNode.records.addAll(leaf.records.subList(0,freeSpace));
+			leaf.records.subList(0,freeSpace).clear();
 			K newKey = leaf.records.get(0).key;
-			leftNode.records.add(record);
 			propogateKeyUpwards(leaf.parent, oldKey, newKey);
 			return true;
 		}
