@@ -99,7 +99,9 @@ public class test_inserts {
     /**
      * Simple unit test that checks unordered inserts of positive and negative
      * With some consecutive numbers
-     */void testUnorderedInsert_regression_2() {
+     */
+    @Test
+    void testUnorderedInsert_regression_2() {
         ArrayList<Integer> numbers = new ArrayList<Integer>(Arrays.asList(
                 10, -1, 20, 22, 30, 4, 5, 40, -7, 12, 13, 17, 21
         ));
@@ -107,7 +109,6 @@ public class test_inserts {
         log.info("Running testUnorderedInsert");
         runTest(tree, numbers);
     }
-
 
     @Test
     void testRandomInsert() {
