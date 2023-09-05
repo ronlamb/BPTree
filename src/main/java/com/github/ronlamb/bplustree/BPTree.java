@@ -228,7 +228,7 @@ public class BPTree<K extends Comparable<K>,V> {
 			 *    [ 1, 3]  [ 10, 19, 20]   [ 22, 23, 27 ]    [ 30, 34, 35 ]  << added, 27
 			 */
 			/* Get the number of records to copy over to fill left record to 85%
-			 * Save the current head key of the left node, then append to to the left node
+			 * Save the current head key of the left node, then append to the left node
 			 * And propagate the new key upwards.
 			 */
 			int freeSpace = config.maxBranchRefactor - leftNode.records.size();
