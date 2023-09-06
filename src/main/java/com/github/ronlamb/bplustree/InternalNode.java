@@ -106,7 +106,7 @@ public class InternalNode<K extends Comparable<K>, V> extends Node<K,V> {
 		return keys.size() > config.maxKeys;
 	}
 
-	public boolean insertOld(K key, Node<K,V> child) {
+	public boolean insertLinear(K key, Node<K,V> child) {
 		int i;
 		/*
 		log.debug("Insert Internal");
@@ -202,11 +202,14 @@ public class InternalNode<K extends Comparable<K>, V> extends Node<K,V> {
 	public int leafIndex(Node<K,V> leaf) {
 		/*
 		 * Original version.  May still be needed when updated to allow duplicate keys
+		 */
+		/*
 		for (int i = 0; i < children.size(); i++) {
 			if (children.get(i) == leaf) {
 				return i;
 			}
 		}
+
 		 */
 		// Replaced with Binary search of first key of each leaf
 		LeafNode<K,V> leafNode = (LeafNode<K,V>) leaf;

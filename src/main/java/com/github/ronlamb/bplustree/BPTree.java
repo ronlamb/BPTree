@@ -89,11 +89,8 @@ public class BPTree<K extends Comparable<K>,V> {
 			return index+1;
 		}
 		return index;
-
 		/*
 		 * Note: May want to check size and if less than say 10 run the following comparison
-		 */
-/*
 		int i;
 		for (i = 0; i < keys.size(); i++) {
 			if (key.compareTo(keys.get(i)) < 0) {
@@ -102,7 +99,7 @@ public class BPTree<K extends Comparable<K>,V> {
 			}
 		}
 		return i;
- */
+		 */
 	}
 	/**
 	 * LeafNode<K,V> findLeaf(InternalNode<K,V> node, K key)
@@ -285,22 +282,18 @@ public class BPTree<K extends Comparable<K>,V> {
 	}
 
 	/**
-	 * 171232 calls 8588 ms - No optimization
-	 * 		0.05015 ms / insert
+	 * 252590 calls 2240 ms - No optimization
+	 * 		0.008868 ms / insert
 	 *
-	 * 171753 call 8382 ms - FindPrevKey optimizations
-	 * 		0.04880 ms / insert 2.7% faster
+	 * 244178 call 2023 ms - FindPrevKey optimizations
+	 * 		0.008285 ms / insert 6.6% reduction
 	 *
-	 * 172590 calls 8207 ms - leafIndex optimization
-	 * 		0.04755 ms / insert 5.2% faster
-	 * Approx 5% faster
-	 *
-	 * 172948 calls 7646 ms - InternalNode.insert optimization
-	 * 		0.04421 ms / insert	11.8 % faster
+	 * 247415 calls 1808 ms - leafIndex optimization
+	 * 		0.007305 ms / insert 17.6% reduction
 	 *
 	 * No debug code
-	 * 237770 calls 1527 ms
-	 * 		0.006422 ms / insert
+	 * 254870 calls 1759 ms - InternalNode.insert optimization
+	 * 		0.006902 ms / insert 22.2% reduction
 	 *
 	 * @param key
 	 * @param value
