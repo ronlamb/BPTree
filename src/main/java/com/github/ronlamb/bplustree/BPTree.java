@@ -284,14 +284,17 @@ public class BPTree<K extends Comparable<K>,V> {
 
 	/**
 	 * 171232 calls 8588 ms - No optimization
-	 * 		0.50154 ms / insert
+	 * 		0.05015 ms / insert
 	 *
 	 * 171753 call 8382 ms - FindPrevKey optimizations
-	 * 		0.04880 ms / insert
+	 * 		0.04880 ms / insert 2.7% faster
 	 *
 	 * 172590 calls 8207 ms - leafIndex optimization
-	 * 		0.04755 ms / insert
+	 * 		0.04755 ms / insert 5.2% faster
 	 * Approx 5% faster
+	 *
+	 * 172948 calls 7646 ms - InternalNode.insert optimization
+	 * 		0.04421 ms / insert	11.8 % faster
 	 *
 	 * @param key
 	 * @param value
