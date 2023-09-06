@@ -9,6 +9,14 @@ The BPTree class does not check for duplicate keys.
 
 This may be added later as an enhancement.
 
+## Timings
+
+The following timings were done useing Visual VM running Main.
+Timings done on:
+* Windows 10
+* Ryzen 5900x
+* 64 GB Ram
+
 
 | Timings                          | Calls | Time (ms) | Time / insert (ms) | Reduction |
 |----------------------------------| - | - | - | - |
