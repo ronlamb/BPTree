@@ -83,13 +83,15 @@ public class LeafNode<K extends Comparable<K>, V> extends Node<K,V> {
 				index = 0;
 			}
 		}
-		log.debug("record: {}, insert at index = {}, records: {}", record, index, records);
+
+		//log.debug("record: {}, insert at index = {}, records: {}", record, index, records);
 		if (index == records.size()) {
 			records.add(record);
 		} else {
 			records.add(index,record);
 		}
-		log.debug("new records = {}, record: {}", records, records.get(index));
+
+		//log.debug("new records = {}, record: {}", records, records.get(index));
 		return records.size() > config.branchFactor;
 	}
 

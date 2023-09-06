@@ -68,7 +68,7 @@ public class BPTree<K extends Comparable<K>,V> {
 	}
 	
 	public void dump() {
-		log.debug("\nCurrent B+Tree structure");
+		//log.debug("\nCurrent B+Tree structure");
 		System.out.println("DEPTH: " + depth);
 		if (root == null) {
 			firstLeaf.dump(0, depth);
@@ -78,7 +78,7 @@ public class BPTree<K extends Comparable<K>,V> {
 	}
 
 	public static <K extends Comparable<K>> int findPrevKey(ArrayList<K> keys, K key) {
-		log.debug("Searching " + keys);
+		//log.debug("Searching " + keys);
 		int index = Collections.binarySearch(keys, key);
 		if (index < 0) {
 			index = -(index+1);
@@ -126,9 +126,11 @@ public class BPTree<K extends Comparable<K>,V> {
 
 		// At this point the index i either contains rows = the last key checked
 		// or > than the number of keys, so it points to the final list.
+		/*
 		log.debug("index: {}, children.size(): {}", i, node.children.size());
 		log.debug("node children = {}" , node);
 		log.debug("keys: {}", keys);
+		 */
 		Node<K,V> child = node.children.get(i);
 		if (child instanceof LeafNode<?,?>) {
 			return (LeafNode<K,V>) child;
@@ -161,7 +163,7 @@ public class BPTree<K extends Comparable<K>,V> {
 		 * [               [12,              20]                              [90,                100] ]
 		 * [ [0, 1, 2, 3]      [12,14,15,16]    [20,22,23,24]   [30,32,33,34]    [90, 92, 93, 94]      [100,102] ]
 		 */
-		log.debug("splitInner");
+		//log.debug("splitInner");
 		InternalNode<K,V> rightNode =  node.split();
 		if (node == root) {
 			updateRoot(node, rightNode, rightNode.keys.get(0));
@@ -296,19 +298,23 @@ public class BPTree<K extends Comparable<K>,V> {
 	 * 172948 calls 7646 ms - InternalNode.insert optimization
 	 * 		0.04421 ms / insert	11.8 % faster
 	 *
+	 * No debug code
+	 * 237770 calls 1527 ms
+	 * 		0.006422 ms / insert
+	 *
 	 * @param key
 	 * @param value
 	 */
 	public void insert(K key, V value) {
 		KeyValue<K,V> record = new KeyValue<K,V>(key,value);
 		if (firstLeaf == null) {
-			log.debug("Created initial leaf node");
+			//log.debug("Created initial leaf node");
 			firstLeaf = new LeafNode<K,V>(config, record);
 		} else {
 			if (root == null) {
 				if (firstLeaf.insert(record)) {
 					// leaf is full so split and update root
-					log.debug("First root Inner Node");
+					//log.debug("First root Inner Node");
 					LeafNode<K,V> right = firstLeaf.split();
 					updateRoot(firstLeaf, right, right.records.get(0).key);
 				}

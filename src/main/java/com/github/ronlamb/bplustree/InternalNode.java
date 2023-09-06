@@ -65,11 +65,13 @@ public class InternalNode<K extends Comparable<K>, V> extends Node<K,V> {
 
 	public boolean insert(K key, Node<K,V> child) {
 		int i;
+		/*
 		log.debug("Insert Internal");
 		log.debug("Key       {}", key);
 		log.debug("Child:    {}", child);
-		log.debug("keys:     {}", keys);
-		log.debug("Children: {}", children);
+		 */
+//		log.debug("keys:     {}", keys);
+//		log.debug("Children: {}", children);
 		// TODO: If sice <= 6 do a sequential search
 		int index = Collections.binarySearch(keys, key);
 		if (index < 0) {
@@ -77,7 +79,7 @@ public class InternalNode<K extends Comparable<K>, V> extends Node<K,V> {
 		}
 		// TODO: Replace with binary search if keys.size() > 5-
 		if (index <= (keys.size()-1)) {
-			log.debug("ins loc:  {}", index);
+			//log.debug("ins loc:  {}", index);
 			keys.add(index,key);
 			child.leftNode = children.get(index);
 			child.rightNode = children.get(index+1);
@@ -106,15 +108,17 @@ public class InternalNode<K extends Comparable<K>, V> extends Node<K,V> {
 
 	public boolean insertOld(K key, Node<K,V> child) {
 		int i;
+		/*
 		log.debug("Insert Internal");
 		log.debug("Key       {}", key);
 		log.debug("Child:    {}", child);
 		log.debug("keys:     {}", keys);
 		log.debug("Children: {}", children);
+		 */
 		// TODO: Replace with binary search if keys.size() > 5
 		for (i = 0; i < keys.size(); i++) {
 			if (key.compareTo(keys.get(i)) <= 0) {
-				log.debug("ins loc:  {}", i);
+				//log.debug("ins loc:  {}", i);
 
 				keys.add(i,key);
 				child.leftNode = children.get(i);
