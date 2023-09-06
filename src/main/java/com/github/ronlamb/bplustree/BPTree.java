@@ -2,6 +2,7 @@ package com.github.ronlamb.bplustree;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,15 +18,12 @@ import org.apache.logging.log4j.Logger;
  */
 public class BPTree<K extends Comparable<K>,V> {
     private static final Logger log = LogManager.getLogger(BPTree.class);
-	private static final double minDensity = 50.0;
-	private static final double maxDensity = 90.0;
 
 	BPTConfig config;
 
     LeafNode<K,V> firstLeaf;
     InternalNode<K,V> root;
     int depth;
-	int minLeafSize;
 
 	/**
 	 * Constructor: BPTree(int branchFactor)
@@ -55,13 +53,6 @@ public class BPTree<K extends Comparable<K>,V> {
 	}
 
 	private void initialize(int branchFactor, double density) {
-		if (density < minDensity) {
-			density = minDensity;
-		}
-
-		if (density > maxDensity) {
-			density = maxDensity;
-		}
 		config = new BPTConfig(branchFactor, density);
 
 		this.firstLeaf = null;
@@ -86,6 +77,33 @@ public class BPTree<K extends Comparable<K>,V> {
 		}
 	}
 
+	public static <K extends Comparable<K>> int findPrevKey(ArrayList<K> keys, K key) {
+		log.debug("Searching " + keys);
+		int index = Collections.binarySearch(keys, key);
+		if (index < 0) {
+			index = -(index+1);
+			if (index == -1) {
+				index = 0;
+			}
+		} else {
+			return index+1;
+		}
+		return index;
+
+		/*
+		 * Note: May want to check size and if less than say 10 run the following comparison
+		 */
+/*
+		int i;
+		for (i = 0; i < keys.size(); i++) {
+			if (key.compareTo(keys.get(i)) < 0) {
+				// pointer is less than the current key
+				break;
+			}
+		}
+		return i;
+ */
+	}
 	/**
 	 * LeafNode<K,V> findLeaf(InternalNode<K,V> node, K key)
 	 *
@@ -93,18 +111,18 @@ public class BPTree<K extends Comparable<K>,V> {
 	 *
 	 * @param node	Current parent node
 	 * @param key	Key to find
-	 * @return
+	 * @return 		Leaf that contains the key
+	 *
+	 * 1061 milliseconds with 23,836 calls 1066 total + cpu
+	 * 		0.044722 Milliseconds per call with sequential check
+	 *
+	 * 6041 ms (6244 total) with 536,999 calls
+	 * 		0.011250 Milliseconds per call with findPrevKey binary search
+	 *
 	 */
 	private LeafNode<K,V> findLeaf(InternalNode<K,V> node, K key) {
 		ArrayList<K> keys = node.keys;
-		int i;
-		log.debug("Searching " + node.keys);
-		for (i = 0; i < keys.size(); i++) {
-			if (key.compareTo(keys.get(i)) < 0) {
-				// pointer is less than the current key
-				break;
-			}
-		}
+		int i = findPrevKey(keys, key);
 
 		// At this point the index i either contains rows = the last key checked
 		// or > than the number of keys, so it points to the final list.
@@ -259,18 +277,25 @@ public class BPTree<K extends Comparable<K>,V> {
 			K newKey = rightNode.records.get(0).key;
 			propogateKeyUpwards(leaf.parent, oldKey, newKey);
 
-			/*
-			KeyValue<K,V> record = leaf.records.remove(leaf.records.size()-1);
-			K oldKey = rightNode.records.get(0).key;
-			K newKey = record.key;
-			rightNode.records.add(0, record);
-			propogateKeyUpwards(leaf.parent, oldKey, newKey);
-			 */
 			return true;
 		}
 		return false;
 	}
 
+	/**
+	 * 171232 calls 8588 ms - No optimization
+	 * 		0.50154 ms / insert
+	 *
+	 * 171753 call 8382 ms - FindPrevKey optimizations
+	 * 		0.04880 ms / insert
+	 *
+	 * 172590 calls 8207 ms - leafIndex optimization
+	 * 		0.04755 ms / insert
+	 * Approx 5% faster
+	 *
+	 * @param key
+	 * @param value
+	 */
 	public void insert(K key, V value) {
 		KeyValue<K,V> record = new KeyValue<K,V>(key,value);
 		if (firstLeaf == null) {
@@ -279,8 +304,8 @@ public class BPTree<K extends Comparable<K>,V> {
 		} else {
 			if (root == null) {
 				if (firstLeaf.insert(record)) {
+					// leaf is full so split and update root
 					log.debug("First root Inner Node");
-					// root is full
 					LeafNode<K,V> right = firstLeaf.split();
 					updateRoot(firstLeaf, right, right.records.get(0).key);
 				}

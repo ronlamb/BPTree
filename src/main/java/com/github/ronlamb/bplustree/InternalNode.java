@@ -70,7 +70,7 @@ public class InternalNode<K extends Comparable<K>, V> extends Node<K,V> {
 		log.debug("Child:    {}", child);
 		log.debug("keys:     {}", keys);
 		log.debug("Children: {}", children);
-		// TODO: Do a binary search if keys size > 5
+		// TODO: Replace with binary search if keys.size() > 5
 		for (i = 0; i < keys.size(); i++) {
 			if (key.compareTo(keys.get(i)) <= 0) {
 				log.debug("ins loc:  {}", i);
@@ -149,16 +149,36 @@ public class InternalNode<K extends Comparable<K>, V> extends Node<K,V> {
 		}
 		right.leftNode = this;
 		right.rightNode = rightNode;
-		rightNode= right;
 		right.parent = parent;
+		rightNode=right;
 		return right;
 	}
 
 	public int leafIndex(Node<K,V> leaf) {
-		// Replace with Binary search if possible
+		/*
+		 * Original version.  May still be needed when updated to allow duplicate keys
 		for (int i = 0; i < children.size(); i++) {
 			if (children.get(i) == leaf) {
 				return i;
+			}
+		}
+		 */
+		// Replaced with Binary search of first key of each leaf
+		LeafNode<K,V> leafNode = (LeafNode<K,V>) leaf;
+		int first = 0;
+		int last = children.size() -1;
+		K leafKey  = leafNode.records.get(0).key;
+		while (first < last) {
+			int mid = (last + first) / 2;
+			LeafNode<K,V> cmpNode = (LeafNode<K,V>) children.get(mid);
+			int cmp = leafKey.compareTo(cmpNode.records.get(0).key);
+			if (cmp == 0) {
+				return mid;
+			}
+			if (cmp< 0) {
+				first = mid + 1;
+			} else {
+				last = mid - 1;
 			}
 		}
 		return -1;
