@@ -130,27 +130,6 @@ public class BPTree<K extends Comparable<K>,V> {
 		depth++;
 	}
 
-	public void splitInnerOld(InternalNode<K,V> node) {
-		/*
-		 * Keys
-		 * [              12,              20,              30,              90                (100) ]
-		 * [ [0, 1, 2, 3]    [12,14,15,16]    [20,22,23,24]    [30,32,33,34]   [90, 92, 93, 94]      [100,102] ]
-		 * 
-		 * [                                                 30                                        ]
-		 * [               [12,              20]                              [90,                100] ]
-		 * [ [0, 1, 2, 3]      [12,14,15,16]    [20,22,23,24]   [30,32,33,34]    [90, 92, 93, 94]      [100,102] ]
-		 */
-		//log.debug("splitInner");
-		InternalNode<K,V> rightNode =  node.split();
-		if (node == root) {
-			updateRoot(node, rightNode, rightNode.keys.get(0));
-		} else {
-			if (node.parent.insert(rightNode.keys.get(0), rightNode)) {
-				splitInnerOld(node.parent);
-			}
-		}
-	}
-
 	public void splitInner(InternalNode<K,V> node) {
 		/*
 		 * Keys
