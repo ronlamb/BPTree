@@ -19,7 +19,6 @@ public class InternalNode<K extends Comparable<K>, V> extends Node<K,V> {
 		this.children = children;
 		this.rightNode = null;
 		this.leftNode = null;
-		// ??? Set parent to this?
 	}
 
 	public String keysString() {
@@ -217,40 +216,18 @@ public class InternalNode<K extends Comparable<K>, V> extends Node<K,V> {
 		right.rightNode = rightNode;
 		right.parent = parent;
 		rightNode=right;
+		if (children.get(0) instanceof LeafNode<K,V>) {
+			resetParentIndex(this);
+			resetParentIndex(right);
+		}
 		return right;
 	}
 
-	public int leafIndex(Node<K,V> leaf) {
-		/*
-		 * Original version.  May still be needed when updated to allow duplicate keys
-		 */
-		/*
-		for (int i = 0; i < children.size(); i++) {
-			if (children.get(i) == leaf) {
-				return i;
-			}
+	private void resetParentIndex(InternalNode<K,V> right) {
+		int i = 0;
+		for (Node<K,V> child: right.children) {
+			child.parentIndex = i++;
 		}
-
-		 */
-		// Replaced with Binary search of first key of each leaf
-		LeafNode<K,V> leafNode = (LeafNode<K,V>) leaf;
-		int first = 0;
-		int last = children.size() -1;
-		K leafKey  = leafNode.records.get(0).key;
-		while (first < last) {
-			int mid = (last + first) / 2;
-			LeafNode<K,V> cmpNode = (LeafNode<K,V>) children.get(mid);
-			int cmp = leafKey.compareTo(cmpNode.records.get(0).key);
-			if (cmp == 0) {
-				return mid;
-			}
-			if (cmp< 0) {
-				first = mid + 1;
-			} else {
-				last = mid - 1;
-			}
-		}
-		return -1;
 	}
 
 	public int findPrevKey(K key) {
