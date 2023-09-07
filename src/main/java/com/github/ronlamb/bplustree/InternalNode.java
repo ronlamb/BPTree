@@ -241,6 +241,30 @@ public class InternalNode<K extends Comparable<K>, V> extends Node<K,V> {
 		return -1;
 	}
 
+	public int findPrevKey(K key) {
+		int index = Collections.binarySearch(keys, key);
+		if (index < 0) {
+			index = -(index+1);
+			if (index == -1) {
+				index = 0;
+			}
+		} else {
+			return index+1;
+		}
+		return index;
+		/*
+		 * Note: May want to check size and if less than say 10 run the following comparison
+		int i;
+		for (i = 0; i < keys.size(); i++) {
+			if (key.compareTo(keys.get(i)) < 0) {
+				// pointer is less than the current key
+				break;
+			}
+		}
+		return i;
+		 */
+
+	}
 	public int keyIndex(K key) {
 		return Collections.binarySearch(keys, key);
 	}

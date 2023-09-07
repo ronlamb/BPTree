@@ -52,6 +52,10 @@ public class BPTree<K extends Comparable<K>,V> {
 		initialize(branchFactor, density);
 	}
 
+	public BPTConfig getConfig() {
+		return config;
+	}
+
 	private void initialize(int branchFactor, double density) {
 		config = new BPTConfig(branchFactor, density);
 
@@ -77,30 +81,6 @@ public class BPTree<K extends Comparable<K>,V> {
 		}
 	}
 
-	public static <K extends Comparable<K>> int findPrevKey(ArrayList<K> keys, K key) {
-		//log.debug("Searching " + keys);
-		int index = Collections.binarySearch(keys, key);
-		if (index < 0) {
-			index = -(index+1);
-			if (index == -1) {
-				index = 0;
-			}
-		} else {
-			return index+1;
-		}
-		return index;
-		/*
-		 * Note: May want to check size and if less than say 10 run the following comparison
-		int i;
-		for (i = 0; i < keys.size(); i++) {
-			if (key.compareTo(keys.get(i)) < 0) {
-				// pointer is less than the current key
-				break;
-			}
-		}
-		return i;
-		 */
-	}
 	/**
 	 * LeafNode<K,V> findLeaf(InternalNode<K,V> node, K key)
 	 *
@@ -119,7 +99,7 @@ public class BPTree<K extends Comparable<K>,V> {
 	 */
 	private LeafNode<K,V> findLeaf(InternalNode<K,V> node, K key) {
 		ArrayList<K> keys = node.keys;
-		int i = findPrevKey(keys, key);
+		int i = node.findPrevKey(key);
 
 		// At this point the index i either contains rows = the last key checked
 		// or > than the number of keys, so it points to the final list.
