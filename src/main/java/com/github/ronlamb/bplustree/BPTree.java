@@ -152,7 +152,6 @@ public class BPTree<K extends Comparable<K>,V> {
 		}
 	}
 
-
 	private void propogateKeyUpwards(InternalNode<K,V> node, K oldKey, K newKey) {
 		while (node != null) {
 			int index = node.keyIndex(oldKey);
@@ -293,7 +292,7 @@ public class BPTree<K extends Comparable<K>,V> {
 		while (first.leftNode != null) {
 			first = first.leftNode;
 		}
-	return first;
+		return first;
 	}
 
 	public void calcLeafStats(Statistics stats, LeafNode<K,V> leaf) {
