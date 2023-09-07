@@ -122,7 +122,7 @@ public class test_inserts {
         runTest(tree, numbers);
     }
 
-    //@Test
+    @Test
     void testFindLeafNode_Equals() {
         ArrayList<Integer> keys = new ArrayList<Integer>(Arrays.asList(
                 667252, 667430, 667675, 667903, 668172, 668403, 668624, 668845, 669063, 669273, 669550, 669816, 670096, 670371, 670573
@@ -134,7 +134,7 @@ public class test_inserts {
         log.info("Found: {}", prevKey);
     }
 
-    //@Test
+    @Test
     void testFindLeafNode() {
         ArrayList<Integer> keys = new ArrayList<Integer>(Arrays.asList(
                 347847, 347860, 347876, 347893, 347909, 347924, 347937, 347950, 347960, 347974, 347985, 348000, 348015, 348029, 348039, 348057, 348069
