@@ -110,7 +110,7 @@ public class InternalNode<K extends Comparable<K>, V> extends Node<K,V> {
 	 * Linear version of insert
 	 *
 	 * Future use: Call when keys.size() <= 6
-	 * 
+	 *
 	 * @param key
 	 * @param child
 	 * @return
