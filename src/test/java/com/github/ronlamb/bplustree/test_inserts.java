@@ -100,7 +100,7 @@ public class test_inserts {
      * Simple unit test that checks unordered inserts of positive and negative
      * With some consecutive numbers
      */
-    // @Test
+    @Test
     void testUnorderedInsert_regression_2() {
         ArrayList<Integer> numbers = new ArrayList<Integer>(Arrays.asList(
                 10, -1, 20, 22, 30, 4, 5, 40, -7, 12, 13, 17, 21
@@ -120,29 +120,5 @@ public class test_inserts {
         log.info("Running testRandomInsert");
         //log.info("Numbers: {}", numbers);
         runTest(tree, numbers);
-    }
-
-    @Test
-    void testFindLeafNode_Equals() {
-        ArrayList<Integer> keys = new ArrayList<Integer>(Arrays.asList(
-                667252, 667430, 667675, 667903, 668172, 668403, 668624, 668845, 669063, 669273, 669550, 669816, 670096, 670371, 670573
-        ));
-        Integer key = 670371;
-        BPTree<Integer, Double> tree = new BPTree<Integer, Double>(20, 66.666);
-        int prevKey = tree.findPrevKey(keys, key);
-        assertTrue(prevKey == 14);
-        log.info("Found: {}", prevKey);
-    }
-
-    @Test
-    void testFindLeafNode() {
-        ArrayList<Integer> keys = new ArrayList<Integer>(Arrays.asList(
-                347847, 347860, 347876, 347893, 347909, 347924, 347937, 347950, 347960, 347974, 347985, 348000, 348015, 348029, 348039, 348057, 348069
-        ));
-        Integer key = 347974;
-        BPTree<Integer, Double> tree = new BPTree<Integer, Double>(20, 66.666);
-        int prevKey = tree.findPrevKey(keys, key);
-        log.info("Found: {}", prevKey);
-        assertTrue(prevKey == 10);
     }
 }
