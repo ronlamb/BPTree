@@ -62,6 +62,7 @@ public class test_inserts {
 
 
     //@Test
+    //Disabled temporarily to see if I can reduce the size
     /**
      * Unit test pulled from testRandomInsert that failed insert.
      */
