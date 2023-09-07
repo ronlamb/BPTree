@@ -178,12 +178,6 @@ public class BPTree<K extends Comparable<K>,V> {
 			return false;
 		}
 
-		/*
-		int index = leaf.parent.leafIndex(leaf);
-		if (index != leaf.parentIndex) {
-			log.info("Leaf index mismatch: index: {}, parentIndex: {}", index, leaf.parentIndex);
-		}
-		*/
 		int index = leaf.parentIndex;
 		//log.info("Index: {}",index);
 		LeafNode<K,V> rightNode = null;
@@ -195,10 +189,6 @@ public class BPTree<K extends Comparable<K>,V> {
 		if (index > 0) {
 			leftNode =  (LeafNode<K, V>) leaf.leftNode;
 		}
-
-//		if (index > (leaf.parent.children.size() -1) || leaf.parent.children.get(index) != leaf) {
-//			log.info("Mismatch in leaf index: {}", index);
-//		}
 
 		if (leftNode != null && leftNode.records.size() < config.maxBranchRefactor) {
 			/* Move Left single node:
