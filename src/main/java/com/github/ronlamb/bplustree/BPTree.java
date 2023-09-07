@@ -2,6 +2,7 @@ package com.github.ronlamb.bplustree;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,15 +18,12 @@ import org.apache.logging.log4j.Logger;
  */
 public class BPTree<K extends Comparable<K>,V> {
     private static final Logger log = LogManager.getLogger(BPTree.class);
-	private static final double minDensity = 50.0;
-	private static final double maxDensity = 90.0;
 
 	BPTConfig config;
 
     LeafNode<K,V> firstLeaf;
     InternalNode<K,V> root;
     int depth;
-	int minLeafSize;
 
 	/**
 	 * Constructor: BPTree(int branchFactor)
@@ -55,13 +53,6 @@ public class BPTree<K extends Comparable<K>,V> {
 	}
 
 	private void initialize(int branchFactor, double density) {
-		if (density < minDensity) {
-			density = minDensity;
-		}
-
-		if (density > maxDensity) {
-			density = maxDensity;
-		}
 		config = new BPTConfig(branchFactor, density);
 
 		this.firstLeaf = null;
@@ -77,7 +68,7 @@ public class BPTree<K extends Comparable<K>,V> {
 	}
 	
 	public void dump() {
-		log.debug("\nCurrent B+Tree structure");
+		//log.debug("\nCurrent B+Tree structure");
 		System.out.println("DEPTH: " + depth);
 		if (root == null) {
 			firstLeaf.dump(0, depth);
@@ -86,6 +77,30 @@ public class BPTree<K extends Comparable<K>,V> {
 		}
 	}
 
+	public static <K extends Comparable<K>> int findPrevKey(ArrayList<K> keys, K key) {
+		//log.debug("Searching " + keys);
+		int index = Collections.binarySearch(keys, key);
+		if (index < 0) {
+			index = -(index+1);
+			if (index == -1) {
+				index = 0;
+			}
+		} else {
+			return index+1;
+		}
+		return index;
+		/*
+		 * Note: May want to check size and if less than say 10 run the following comparison
+		int i;
+		for (i = 0; i < keys.size(); i++) {
+			if (key.compareTo(keys.get(i)) < 0) {
+				// pointer is less than the current key
+				break;
+			}
+		}
+		return i;
+		 */
+	}
 	/**
 	 * LeafNode<K,V> findLeaf(InternalNode<K,V> node, K key)
 	 *
@@ -93,24 +108,26 @@ public class BPTree<K extends Comparable<K>,V> {
 	 *
 	 * @param node	Current parent node
 	 * @param key	Key to find
-	 * @return
+	 * @return 		Leaf that contains the key
+	 *
+	 * 1061 milliseconds with 23,836 calls 1066 total + cpu
+	 * 		0.044722 Milliseconds per call with sequential check
+	 *
+	 * 6041 ms (6244 total) with 536,999 calls
+	 * 		0.011250 Milliseconds per call with findPrevKey binary search
+	 *
 	 */
 	private LeafNode<K,V> findLeaf(InternalNode<K,V> node, K key) {
 		ArrayList<K> keys = node.keys;
-		int i;
-		log.debug("Searching " + node.keys);
-		for (i = 0; i < keys.size(); i++) {
-			if (key.compareTo(keys.get(i)) < 0) {
-				// pointer is less than the current key
-				break;
-			}
-		}
+		int i = findPrevKey(keys, key);
 
 		// At this point the index i either contains rows = the last key checked
 		// or > than the number of keys, so it points to the final list.
+		/*
 		log.debug("index: {}, children.size(): {}", i, node.children.size());
 		log.debug("node children = {}" , node);
 		log.debug("keys: {}", keys);
+		 */
 		Node<K,V> child = node.children.get(i);
 		if (child instanceof LeafNode<?,?>) {
 			return (LeafNode<K,V>) child;
@@ -143,7 +160,7 @@ public class BPTree<K extends Comparable<K>,V> {
 		 * [               [12,              20]                              [90,                100] ]
 		 * [ [0, 1, 2, 3]      [12,14,15,16]    [20,22,23,24]   [30,32,33,34]    [90, 92, 93, 94]      [100,102] ]
 		 */
-		log.debug("splitInner");
+		//log.debug("splitInner");
 		InternalNode<K,V> rightNode =  node.split();
 		if (node == root) {
 			updateRoot(node, rightNode, rightNode.keys.get(0));
@@ -228,7 +245,7 @@ public class BPTree<K extends Comparable<K>,V> {
 			 *    [ 1, 3]  [ 10, 19, 20]   [ 22, 23, 27 ]    [ 30, 34, 35 ]  << added, 27
 			 */
 			/* Get the number of records to copy over to fill left record to 85%
-			 * Save the current head key of the left node, then append to to the left node
+			 * Save the current head key of the left node, then append to the left node
 			 * And propagate the new key upwards.
 			 */
 			int freeSpace = config.maxBranchRefactor - leftNode.records.size();
@@ -259,28 +276,26 @@ public class BPTree<K extends Comparable<K>,V> {
 			K newKey = rightNode.records.get(0).key;
 			propogateKeyUpwards(leaf.parent, oldKey, newKey);
 
-			/*
-			KeyValue<K,V> record = leaf.records.remove(leaf.records.size()-1);
-			K oldKey = rightNode.records.get(0).key;
-			K newKey = record.key;
-			rightNode.records.add(0, record);
-			propogateKeyUpwards(leaf.parent, oldKey, newKey);
-			 */
 			return true;
 		}
 		return false;
 	}
 
+	/**
+	 *
+	 * @param key
+	 * @param value
+	 */
 	public void insert(K key, V value) {
 		KeyValue<K,V> record = new KeyValue<K,V>(key,value);
 		if (firstLeaf == null) {
-			log.debug("Created initial leaf node");
+			//log.debug("Created initial leaf node");
 			firstLeaf = new LeafNode<K,V>(config, record);
 		} else {
 			if (root == null) {
 				if (firstLeaf.insert(record)) {
-					log.debug("First root Inner Node");
-					// root is full
+					// leaf is full so split and update root
+					//log.debug("First root Inner Node");
 					LeafNode<K,V> right = firstLeaf.split();
 					updateRoot(firstLeaf, right, right.records.get(0).key);
 				}

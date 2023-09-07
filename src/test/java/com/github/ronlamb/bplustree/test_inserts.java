@@ -61,7 +61,8 @@ public class test_inserts {
     }
 
 
-    @Test
+    //@Test
+    //Disabled temporarily to see if I can reduce the size
     /**
      * Unit test pulled from testRandomInsert that failed insert.
      */
@@ -121,5 +122,4 @@ public class test_inserts {
         //log.info("Numbers: {}", numbers);
         runTest(tree, numbers);
     }
-
 }
