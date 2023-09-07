@@ -14,7 +14,7 @@ public class test_find_leaf {
     private static final Logger log = LogManager.getLogger(test_find_leaf.class);
 
     BPTree<Integer, Double> tree;
-//    InternalNode<K,V> node;
+
     @BeforeEach
     void setUp() {
         log.info("setUp");

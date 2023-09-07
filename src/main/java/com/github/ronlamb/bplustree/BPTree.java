@@ -337,6 +337,7 @@ public class BPTree<K extends Comparable<K>,V> {
 		stats.leafDensity = ((stats.averageLeaf / stats.branchFactor) * 10000) / 100;
 		return stats;
 	}
+
 	public void dumpStats() {
 		Statistics stats = getStats();
 		System.out.print("BPTree: branchFactor: " + config.branchFactor);

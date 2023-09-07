@@ -19,6 +19,7 @@ public class InternalNode<K extends Comparable<K>, V> extends Node<K,V> {
 		this.children = children;
 		this.rightNode = null;
 		this.leftNode = null;
+		// ??? Set parent to this?
 	}
 
 	public String keysString() {
@@ -63,6 +64,32 @@ public class InternalNode<K extends Comparable<K>, V> extends Node<K,V> {
 		return insert(record.key, child);
 	}
 
+	public void insertKeyChild(int index, K key, Node<K,V> child) {
+		// TODO: do linear insert if keys.size <= 5 or so
+
+		if (index == keys.size()) {
+			keys.add(key);
+			children.add(child);
+			/*
+			 * Pointer child.rightNode is already set in the Node split routine.
+			 * Therefore no need to copy when the last node. However, if the child
+			 * is a LeafNode and is the last item in children then set rightnode to null
+			 */
+			if (!(child instanceof LeafNode<K, V>)) {
+				child.rightNode = null;
+			}
+		} else {
+			keys.add(index,key);
+			children.add(index+1, child);
+			child.rightNode.leftNode = child;
+		}
+		child.leftNode = children.get(index);
+		child.leftNode.rightNode = child;
+
+		for (int i = index+1; i < children.size(); i++) {
+			children.get(i).parentIndex = i;
+		}
+	}
 	public boolean insert(K key, Node<K,V> child) {
 		int i;
 		/*
@@ -77,32 +104,8 @@ public class InternalNode<K extends Comparable<K>, V> extends Node<K,V> {
 		if (index < 0) {
 			index = -(index+1);
 		}
+		insertKeyChild(index, key, child);
 
-		if (index <= (keys.size()-1)) {
-			//log.debug("ins loc:  {}", index);
-			keys.add(index,key);
-			child.leftNode = children.get(index);
-			child.rightNode = children.get(index+1);
-			child.rightNode.leftNode = child;
-			children.add(index+1, child);
-			return keys.size() > config.maxKeys;
-		}
-		keys.add(key);
-		Node<K, V> oldRight;
-		if (index >= children.size()) {
-			oldRight = children.get(index - 1);
-		} else {
-			oldRight = children.get(index);
-		}
-		child.leftNode = oldRight;
-
-		/* If not a leaf node then remove right node if at end */
-		if (!(child instanceof LeafNode<K, V>)) {
-			child.rightNode = null;
-		}
-		oldRight.rightNode = child;
-
-		children.add(child);
 		return keys.size() > config.maxKeys;
 	}
 
@@ -125,21 +128,30 @@ public class InternalNode<K extends Comparable<K>, V> extends Node<K,V> {
 		log.debug("Children: {}", children);
 		 */
 		// TODO: Replace with binary search if keys.size() > 5
+		boolean found = false;
 		for (i = 0; i < keys.size(); i++) {
 			if (key.compareTo(keys.get(i)) <= 0) {
+				found = true;
 				//log.debug("ins loc:  {}", i);
-
+				children.get(i).parentIndex = i;
 				keys.add(i,key);
 				child.leftNode = children.get(i);
 				child.rightNode = children.get(i+1);
 				child.rightNode.leftNode = child;
 				children.add(i+1, child);
-				return keys.size() > config.maxKeys;
 			}
+		}
+
+		if (found) {
+			for (; i < children.size(); i++) {
+				children.get(i).parentIndex = i;
+			}
+			return keys.size() > config.maxKeys;
 		}
 
 		keys.add(key);
 		Node<K,V> oldRight;
+		child.parentIndex = i;
 		if (i >= children.size()) {
 			oldRight = children.get(i-1);
 		} else {
