@@ -63,6 +63,32 @@ public class InternalNode<K extends Comparable<K>, V> extends Node<K,V> {
 		return insert(record.key, child);
 	}
 
+	public void insertKeyChild(int index, K key, Node<K,V> child) {
+		// TODO: do linear insert if keys.size <= 5 or so
+
+		if (index == keys.size()) {
+			keys.add(key);
+			children.add(child);
+			/*
+			 * Pointer child.rightNode is already set in the Node split routine.
+			 * Therefore no need to copy when the last node. However, if the child
+			 * is a LeafNode and is the last item in children then set rightnode to null
+			 */
+			if (!(child instanceof LeafNode<K, V>)) {
+				child.rightNode = null;
+			}
+		} else {
+			keys.add(index,key);
+			children.add(index+1, child);
+			child.rightNode.leftNode = child;
+		}
+		child.leftNode = children.get(index);
+		child.leftNode.rightNode = child;
+
+		for (int i = index+1; i < children.size(); i++) {
+			children.get(i).parentIndex = i;
+		}
+	}
 	public boolean insert(K key, Node<K,V> child) {
 		int i;
 		/*
@@ -77,32 +103,8 @@ public class InternalNode<K extends Comparable<K>, V> extends Node<K,V> {
 		if (index < 0) {
 			index = -(index+1);
 		}
+		insertKeyChild(index, key, child);
 
-		if (index <= (keys.size()-1)) {
-			//log.debug("ins loc:  {}", index);
-			keys.add(index,key);
-			child.leftNode = children.get(index);
-			child.rightNode = children.get(index+1);
-			child.rightNode.leftNode = child;
-			children.add(index+1, child);
-			return keys.size() > config.maxKeys;
-		}
-		keys.add(key);
-		Node<K, V> oldRight;
-		if (index >= children.size()) {
-			oldRight = children.get(index - 1);
-		} else {
-			oldRight = children.get(index);
-		}
-		child.leftNode = oldRight;
-
-		/* If not a leaf node then remove right node if at end */
-		if (!(child instanceof LeafNode<K, V>)) {
-			child.rightNode = null;
-		}
-		oldRight.rightNode = child;
-
-		children.add(child);
 		return keys.size() > config.maxKeys;
 	}
 
@@ -125,21 +127,30 @@ public class InternalNode<K extends Comparable<K>, V> extends Node<K,V> {
 		log.debug("Children: {}", children);
 		 */
 		// TODO: Replace with binary search if keys.size() > 5
+		boolean found = false;
 		for (i = 0; i < keys.size(); i++) {
 			if (key.compareTo(keys.get(i)) <= 0) {
+				found = true;
 				//log.debug("ins loc:  {}", i);
-
+				children.get(i).parentIndex = i;
 				keys.add(i,key);
 				child.leftNode = children.get(i);
 				child.rightNode = children.get(i+1);
 				child.rightNode.leftNode = child;
 				children.add(i+1, child);
-				return keys.size() > config.maxKeys;
 			}
+		}
+
+		if (found) {
+			for (; i < children.size(); i++) {
+				children.get(i).parentIndex = i;
+			}
+			return keys.size() > config.maxKeys;
 		}
 
 		keys.add(key);
 		Node<K,V> oldRight;
+		child.parentIndex = i;
 		if (i >= children.size()) {
 			oldRight = children.get(i-1);
 		} else {
@@ -205,40 +216,31 @@ public class InternalNode<K extends Comparable<K>, V> extends Node<K,V> {
 		right.rightNode = rightNode;
 		right.parent = parent;
 		rightNode=right;
+		if (children.get(0) instanceof LeafNode<K,V>) {
+			resetParentIndex(this);
+			resetParentIndex(right);
+		}
 		return right;
 	}
 
-	public int leafIndex(Node<K,V> leaf) {
-		/*
-		 * Original version.  May still be needed when updated to allow duplicate keys
-		 */
-		/*
-		for (int i = 0; i < children.size(); i++) {
-			if (children.get(i) == leaf) {
-				return i;
-			}
+	private void resetParentIndex(InternalNode<K,V> right) {
+		int i = 0;
+		for (Node<K,V> child: right.children) {
+			child.parentIndex = i++;
 		}
+	}
 
-		 */
-		// Replaced with Binary search of first key of each leaf
-		LeafNode<K,V> leafNode = (LeafNode<K,V>) leaf;
-		int first = 0;
-		int last = children.size() -1;
-		K leafKey  = leafNode.records.get(0).key;
-		while (first < last) {
-			int mid = (last + first) / 2;
-			LeafNode<K,V> cmpNode = (LeafNode<K,V>) children.get(mid);
-			int cmp = leafKey.compareTo(cmpNode.records.get(0).key);
-			if (cmp == 0) {
-				return mid;
+	public int findPrevKey(K key) {
+		int index = Collections.binarySearch(keys, key);
+		if (index < 0) {
+			index = -(index+1);
+			if (index == -1) {
+				index = 0;
 			}
-			if (cmp< 0) {
-				first = mid + 1;
-			} else {
-				last = mid - 1;
-			}
+		} else {
+			return index+1;
 		}
-		return -1;
+		return index;
 	}
 
 	public int keyIndex(K key) {

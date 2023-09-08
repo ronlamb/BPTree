@@ -108,6 +108,14 @@ public class LeafNode<K extends Comparable<K>, V> extends Node<K,V> {
 		right.leftNode = this;
 		right.rightNode = rightNode;
 		rightNode = right;
+		int index = parentIndex;
+		LeafNode<K,V> remain = (LeafNode<K, V>) rightNode;
+		while (remain != null && remain.parent == parent) {
+			index++;
+			remain.parentIndex = index;
+			remain = (LeafNode<K, V>) remain.rightNode;
+		}
+
 		return right;
 	}
 

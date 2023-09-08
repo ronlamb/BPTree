@@ -52,6 +52,10 @@ public class BPTree<K extends Comparable<K>,V> {
 		initialize(branchFactor, density);
 	}
 
+	public BPTConfig getConfig() {
+		return config;
+	}
+
 	private void initialize(int branchFactor, double density) {
 		config = new BPTConfig(branchFactor, density);
 
@@ -77,30 +81,6 @@ public class BPTree<K extends Comparable<K>,V> {
 		}
 	}
 
-	public static <K extends Comparable<K>> int findPrevKey(ArrayList<K> keys, K key) {
-		//log.debug("Searching " + keys);
-		int index = Collections.binarySearch(keys, key);
-		if (index < 0) {
-			index = -(index+1);
-			if (index == -1) {
-				index = 0;
-			}
-		} else {
-			return index+1;
-		}
-		return index;
-		/*
-		 * Note: May want to check size and if less than say 10 run the following comparison
-		int i;
-		for (i = 0; i < keys.size(); i++) {
-			if (key.compareTo(keys.get(i)) < 0) {
-				// pointer is less than the current key
-				break;
-			}
-		}
-		return i;
-		 */
-	}
 	/**
 	 * LeafNode<K,V> findLeaf(InternalNode<K,V> node, K key)
 	 *
@@ -119,7 +99,7 @@ public class BPTree<K extends Comparable<K>,V> {
 	 */
 	private LeafNode<K,V> findLeaf(InternalNode<K,V> node, K key) {
 		ArrayList<K> keys = node.keys;
-		int i = findPrevKey(keys, key);
+		int i = node.findPrevKey(key);
 
 		// At this point the index i either contains rows = the last key checked
 		// or > than the number of keys, so it points to the final list.
@@ -150,27 +130,6 @@ public class BPTree<K extends Comparable<K>,V> {
 		depth++;
 	}
 
-	public void splitInnerOld(InternalNode<K,V> node) {
-		/*
-		 * Keys
-		 * [              12,              20,              30,              90                (100) ]
-		 * [ [0, 1, 2, 3]    [12,14,15,16]    [20,22,23,24]    [30,32,33,34]   [90, 92, 93, 94]      [100,102] ]
-		 * 
-		 * [                                                 30                                        ]
-		 * [               [12,              20]                              [90,                100] ]
-		 * [ [0, 1, 2, 3]      [12,14,15,16]    [20,22,23,24]   [30,32,33,34]    [90, 92, 93, 94]      [100,102] ]
-		 */
-		//log.debug("splitInner");
-		InternalNode<K,V> rightNode =  node.split();
-		if (node == root) {
-			updateRoot(node, rightNode, rightNode.keys.get(0));
-		} else {
-			if (node.parent.insert(rightNode.keys.get(0), rightNode)) {
-				splitInnerOld(node.parent);
-			}
-		}
-	}
-
 	public void splitInner(InternalNode<K,V> node) {
 		/*
 		 * Keys
@@ -192,7 +151,6 @@ public class BPTree<K extends Comparable<K>,V> {
 			}
 		}
 	}
-
 
 	private void propogateKeyUpwards(InternalNode<K,V> node, K oldKey, K newKey) {
 		while (node != null) {
@@ -220,7 +178,7 @@ public class BPTree<K extends Comparable<K>,V> {
 			return false;
 		}
 
-		int index = leaf.parent.leafIndex(leaf);
+		int index = leaf.parentIndex;
 		//log.info("Index: {}",index);
 		LeafNode<K,V> rightNode = null;
 		LeafNode<K,V> leftNode = null;
@@ -334,7 +292,7 @@ public class BPTree<K extends Comparable<K>,V> {
 		while (first.leftNode != null) {
 			first = first.leftNode;
 		}
-	return first;
+		return first;
 	}
 
 	public void calcLeafStats(Statistics stats, LeafNode<K,V> leaf) {
@@ -379,6 +337,7 @@ public class BPTree<K extends Comparable<K>,V> {
 		stats.leafDensity = ((stats.averageLeaf / stats.branchFactor) * 10000) / 100;
 		return stats;
 	}
+
 	public void dumpStats() {
 		Statistics stats = getStats();
 		System.out.print("BPTree: branchFactor: " + config.branchFactor);
