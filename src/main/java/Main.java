@@ -14,7 +14,6 @@ public class Main {
     private static final Logger log = LogManager.getLogger(BPTree.class);
 
     public static void checkAll(BPTree<Integer, Double> tree, ArrayList<Integer> numbers) {
-        int errCnt = 0;
         int notFound = 0;
         int mismatch = 0;
         for (Integer number : numbers) {
@@ -45,7 +44,7 @@ public class Main {
     }
 
     public static List<Integer> orderedList(int start, int end) {
-        return Arrays.stream(IntStream.iterate(1, i-> i<=end, i->i+1).toArray()).boxed().collect(Collectors.toList());
+        return Arrays.stream(IntStream.iterate(start, i-> i<=end, i->i+1).toArray()).boxed().collect(Collectors.toList());
     }
 
     public static void runTest(BPTree<Integer, Double> tree, ArrayList<Integer> numbers) {

@@ -13,6 +13,7 @@ public class BPTConfig {
     int minLeaves;
     int maxLeaves;
     boolean rebalance;
+    boolean allowDuplicates;
 
     public BPTConfig(int branchFactor, double density) {
         if (density < minDensity) {
@@ -30,6 +31,7 @@ public class BPTConfig {
         this.maxLeaves =branchFactor;
         this.minLeaves = (int) Math.ceil(maxLeaves /2.0);
 
+        allowDuplicates = false;    // For now never allow duplicates
         calcBranchResize();
     }
 

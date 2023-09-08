@@ -22,16 +22,17 @@ public class InternalNode<K extends Comparable<K>, V> extends Node<K,V> {
 	}
 
 	public String keysString() {
-		String rval = "[";
+		StringBuilder rval = new StringBuilder("[");
 		boolean first = true;
 		for (K key : keys) {
 			if (! first ) {
-				rval += ", ";
+				rval.append(", ");
 			}
 			first = false;
-			rval += key;
+			rval.append(key);
 		}
-		return rval + "]";
+		rval.append("]");
+		return rval.toString();
 	}
 	
 	public InternalNode<K,V> getFirstNode() {
@@ -59,9 +60,7 @@ public class InternalNode<K extends Comparable<K>, V> extends Node<K,V> {
 		return "InternalNode: { keys: " + keys + " , children: " + children + " }";
 	}
 
-	public boolean insert(KeyValue<K, V> record, Node<K,V> child) {
-		return insert(record.key, child);
-	}
+
 
 	public void insertKeyChild(int index, K key, Node<K,V> child) {
 		// TODO: do linear insert if keys.size <= 5 or so
@@ -71,8 +70,8 @@ public class InternalNode<K extends Comparable<K>, V> extends Node<K,V> {
 			children.add(child);
 			/*
 			 * Pointer child.rightNode is already set in the Node split routine.
-			 * Therefore no need to copy when the last node. However, if the child
-			 * is a LeafNode and is the last item in children then set rightnode to null
+			 * Therefore, no need to copy when the last node. However, if the child
+			 * is a LeafNode and is the last item in children then set rightNode to null
 			 */
 			if (!(child instanceof LeafNode<K, V>)) {
 				child.rightNode = null;
@@ -89,8 +88,12 @@ public class InternalNode<K extends Comparable<K>, V> extends Node<K,V> {
 			children.get(i).parentIndex = i;
 		}
 	}
+	@SuppressWarnings("unused")
+	public boolean insert(KeyValue<K, V> record, Node<K,V> child) {
+		return insert(record.key, child);
+	}
+
 	public boolean insert(K key, Node<K,V> child) {
-		int i;
 		/*
 		log.debug("Insert Internal");
 		log.debug("Key       {}", key);
@@ -110,12 +113,13 @@ public class InternalNode<K extends Comparable<K>, V> extends Node<K,V> {
 
 	/**
 	 * Linear version of insert
-	 *
+	 * <p>
 	 * Future use: Call when keys.size() <= 6
 	 *
-	 * @param key
-	 * @param child
-	 * @return
+	 * @param key		Key to insert
+	 * @param child		Child for key
+	 *
+	 * @return true if Node
 	 */
 	public boolean insertLinear(K key, Node<K,V> child) {
 		int i;
@@ -183,7 +187,7 @@ public class InternalNode<K extends Comparable<K>, V> extends Node<K,V> {
 	 *  Now
 	 *                        [ 7                  ,  21,                 31,               44                               71 ]
 	 *            { 0:*, 3:* } , { 7:*, 18:*, 19:*} , { 21:*, 22:*, 25:* }, {  31:*, 33:* }, {44:*, 45:*, 49:*, 50:*, 57:*, 66:*}  { 71:*, 73:*, 75:* }
-	 *                                                                                               ^^^---- Has oveflowed
+	 *                                                                                               ^^^---- Has overflowed
 	 *  Split Leaf:
 	 *                        [ 7                  ,  21,                 31,               44                 (50)              71 ] << overflowed
 	 *            { 0:*, 3:* } , { 7:*, 18:*, 19:*} , { 21:*, 22:*, 25:* }, {  31:*, 33:* }, {44:*, 45:*, 49:*} {50:*, 57:*, 66:*}  { 71:*, 73:*, 75:* }
@@ -202,12 +206,12 @@ public class InternalNode<K extends Comparable<K>, V> extends Node<K,V> {
 	InternalNode<K,V> split() {
 		int mid = middle();
 		// Split Inner
-		ArrayList<K> rightKeys = new ArrayList<K>(keys.subList(mid, keys.size()));
+		ArrayList<K> rightKeys = new ArrayList<>(keys.subList(mid, keys.size()));
 
 		keys.subList(mid, keys.size()).clear();
-		ArrayList<Node<K,V>> rightChildren = new ArrayList<Node<K,V>>(children.subList(mid+1, children.size()));
+		ArrayList<Node<K,V>> rightChildren = new ArrayList<>(children.subList(mid + 1, children.size()));
 		children.subList(mid+1, children.size()).clear();
-		InternalNode<K,V> right = new InternalNode<K,V>(config, rightKeys, rightChildren);
+		InternalNode<K,V> right = new InternalNode<>(config, rightKeys, rightChildren);
 		for (Node<K,V> child : rightChildren) {
 			// update child parents to right note
 			child.parent = right;
@@ -230,6 +234,7 @@ public class InternalNode<K extends Comparable<K>, V> extends Node<K,V> {
 		}
 	}
 
+	@SuppressWarnings("ConstantValue")
 	public int findPrevKey(K key) {
 		int index = Collections.binarySearch(keys, key);
 		if (index < 0) {
