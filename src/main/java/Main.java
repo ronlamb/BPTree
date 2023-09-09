@@ -58,7 +58,9 @@ public class Main {
     }
 
     void runOnce() {
-        BPTree<Integer, Double> tree = new BPTree<Integer, Double>(20, 66.666);
+        BPTree<Integer, Double> tree = new BPTree<Integer, Double>(20, 66.666); // approx 68400 leaf nodes, 70 inner, 1300 keys
+        //BPTree<Integer, Double> tree = new BPTree<Integer, Double>(50, 66.666); // approx 27400 leaf nodes, 85 inner, 2700 keys
+        //BPTree<Integer, Double> tree = new BPTree<Integer, Double>(100, 66.666); // approx 13700 leaf nodes, 120 inner, 7500 keys
         List<Integer> list = orderedList(1, 1000000);
         Collections.shuffle(list);
         ArrayList<Integer> numbers = new ArrayList<>(list);

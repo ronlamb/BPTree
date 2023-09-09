@@ -234,8 +234,13 @@ public class InternalNode<K extends Comparable<K>, V> extends Node<K,V> {
 		}
 	}
 
+	/**
+	 * Return the record that the key fits in
+	 * @param key
+	 * @return
+	 */
 	@SuppressWarnings("ConstantValue")
-	public int findPrevKey(K key) {
+	public Node<K,V> findChildNode(K key) {
 		int index = Collections.binarySearch(keys, key);
 		if (index < 0) {
 			index = -(index+1);
@@ -243,9 +248,15 @@ public class InternalNode<K extends Comparable<K>, V> extends Node<K,V> {
 				index = 0;
 			}
 		} else {
-			return index+1;
+			index++;
 		}
-		return index;
+
+		/*
+		log.debug("index: {}, children.size(): {}", index, children.size());
+		log.debug("node children = {}" , children);
+		log.debug("keys: {}", keys);
+		*/
+		return children.get(index);
 	}
 
 	public int keyIndex(K key) {

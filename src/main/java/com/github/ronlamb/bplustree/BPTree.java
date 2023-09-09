@@ -22,7 +22,7 @@ public class BPTree<K extends Comparable<K>,V> {
 
     LeafNode<K,V> firstLeaf;
     InternalNode<K,V> root;
-    int depth;
+    int depth;				// Depth is how deep internal nodes are
 
 	/**
 	 * Constructor: BPTree(int branchFactor)
@@ -97,16 +97,10 @@ public class BPTree<K extends Comparable<K>,V> {
 	 *
 	 */
 	private LeafNode<K,V> findLeaf(InternalNode<K,V> node, K key) {
-		int i = node.findPrevKey(key);
+		Node<K,V> child = node.findChildNode(key);
 
 		// At this point the variable i either contains rows = the last key checked
 		// or > than the number of keys, so it points to the final list.
-		/*
-		log.debug("index: {}, children.size(): {}", i, node.children.size());
-		log.debug("node children = {}" , node);
-		log.debug("keys: {}", keys);
-		 */
-		Node<K,V> child = node.children.get(i);
 		if (child instanceof LeafNode<?,?>) {
 			return (LeafNode<K,V>) child;
 		} else {
@@ -121,10 +115,9 @@ public class BPTree<K extends Comparable<K>,V> {
 		ArrayList<Node<K,V>> children = new ArrayList<>();
 		children.add(left);
 		children.add(right);
-		InternalNode<K,V> newRoot = new InternalNode<>(config, keys, children);
-		right.parent = newRoot;
-		left.parent = newRoot;
-		root = newRoot;
+		root = new InternalNode<>(config, keys, children);
+		right.parent = root;
+		left.parent = root;
 		depth++;
 	}
 
@@ -135,7 +128,7 @@ public class BPTree<K extends Comparable<K>,V> {
 		 * [ [0, 1, 2, 3]      [12,14,15,16]     [20,22,23,24]    [30,32,33,34]   [90, 92, 93, 94]       [100,102] ]
 		 *
 		 * [                                                      30                                         ]
-		 * [                    [12           , 20]                |            [30, 90,                 100] ]
+		 * [                    [12           , 20]                |               [90,                 100] ]
 		 * [ [0, 1, 2, 3]           [12,14,15,16]    [20,22,23,24]    [30,32,33,34]   [90, 92, 93, 94]       [100,102] ]
 		 */
 		InternalNode<K,V> rightNode =  node.split();
@@ -186,6 +179,7 @@ public class BPTree<K extends Comparable<K>,V> {
 			leftNode =  (LeafNode<K, V>) leaf.leftNode;
 		}
 
+		boolean rval = false;
 		if (leftNode != null && leftNode.records.size() < config.maxBranchRefactor) {
 			/* Move Left single node:
 			 *                            [30]
@@ -208,7 +202,12 @@ public class BPTree<K extends Comparable<K>,V> {
 			leaf.records.subList(0,freeSpace).clear();
 			K newKey = leaf.records.get(0).key;
 			propagateKeyUpwards(leaf.parent, oldKey, newKey);
-			return true;
+
+			if (leaf.records.size() <= config.maxBranchRefactor) {
+				return true;
+			}
+
+			rval = true;
 		}
 
 		if (rightNode != null && rightNode.records.size() < config.maxBranchRefactor) {
@@ -232,7 +231,9 @@ public class BPTree<K extends Comparable<K>,V> {
 
 			return true;
 		}
-		return false;
+
+		//return false;
+		return rval;
 	}
 
 	/**
