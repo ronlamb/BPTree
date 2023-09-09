@@ -39,9 +39,9 @@ public class test_duplicates {
     }
 
     @Test
-    void test_duplicatesSmall() {
+    void test_duplicatesSmall_dont_allow() {
         ArrayList<Integer> numbers = new ArrayList<Integer>(Arrays.asList(
-                1, 3 , 7 ,12, 11, 1, 2, 7
+                1, 3 , 7 ,12, 11, 1, 2, 7, 17, 13, 4, 3, 1 ,7, 4, 3, 2, 3, 3, 3, 23
         ));
         BPTree<Integer, Double> tree = new BPTree<Integer, Double>(5);
         log.info("Running testUnorderedInsert");

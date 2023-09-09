@@ -52,9 +52,9 @@ public class LeafNode<K extends Comparable<K>, V> extends Node<K,V> {
 	public Node<K,V> dump(int level, int depth) {
 		super.dump(level, depth);
 		int i;
-		LeafNode<K,V> first;
-		for ( first =getFirstNode() , i = 0 ; first != null; first = (LeafNode<K, V>) first.rightNode, i++) {
-			System.out.println("Leafs[" + i + "] = " + leafsString());
+		LeafNode<K,V> record;
+		for ( record = getFirstNode() , i = 0 ; record != null; record = (LeafNode<K, V>) record.rightNode, i++) {
+			System.out.println("Leafs[" + i + "] = " + record.leafsString());
 		}
 
 		return null;
@@ -91,7 +91,12 @@ public class LeafNode<K extends Comparable<K>, V> extends Node<K,V> {
 		if (index == records.size()) {
 			records.add(record);
 		} else {
-			records.add(index,record);
+			if (records.get(index).key == record.key && !config.allowDuplicates) {
+				// Duplicate key so overwrite
+				records.set(index, record);
+			} else {
+				records.add(index, record);
+			}
 		}
 
 		//log.debug("new records = {}, record: {}", records, records.get(index));
