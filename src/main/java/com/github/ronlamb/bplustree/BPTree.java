@@ -1,11 +1,9 @@
 package com.github.ronlamb.bplustree;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.util.ArrayList;
 
 // Based on descriptions o B+ Tree at
 //https://en.wikipedia.org/wiki/B%2B_tree
@@ -17,17 +15,18 @@ import org.apache.logging.log4j.Logger;
  * @param <V>
  */
 public class BPTree<K extends Comparable<K>,V> {
-    private static final Logger log = LogManager.getLogger(BPTree.class);
+    @SuppressWarnings("unused")
+	private static final Logger log = LogManager.getLogger(BPTree.class);
 
 	BPTConfig config;
 
     LeafNode<K,V> firstLeaf;
     InternalNode<K,V> root;
-    int depth;
+    int depth;				// Depth is how deep internal nodes are
 
 	/**
 	 * Constructor: BPTree(int branchFactor)
-	 *
+	 * <p>
 	 * Constructs new BPTree object with the given branching factor and a default density of 50%.
 	 *
 	 * @param branchFactor Branching factor for the tree
@@ -38,13 +37,13 @@ public class BPTree<K extends Comparable<K>,V> {
 
 	/**
 	 * Constructor BPTree(int branchFactor, double density)
-	 *
+	 * <p>
 	 * Constructs new BPTree object with the given branching factor and given density
 	 *
 	 * @param branchFactor Branching factor for the tree
 	 * @param density      Branching factor to use when rebalancing full leaves
 	 *                     Allowed range 50.0 to 90.0%
-	 *
+	 * <p>
 	 *                     		If < 50 will default to 50
 	 *                     		If > 90 will default to 90
 	 */
@@ -83,32 +82,25 @@ public class BPTree<K extends Comparable<K>,V> {
 
 	/**
 	 * LeafNode<K,V> findLeaf(InternalNode<K,V> node, K key)
-	 *
+	 * <p>
 	 * Recursively search through the Tree for the appropriate leaf.
 	 *
 	 * @param node	Current parent node
 	 * @param key	Key to find
 	 * @return 		Leaf that contains the key
-	 *
+	 * <p>
 	 * 1061 milliseconds with 23,836 calls 1066 total + cpu
 	 * 		0.044722 Milliseconds per call with sequential check
-	 *
+	 * <p>
 	 * 6041 ms (6244 total) with 536,999 calls
 	 * 		0.011250 Milliseconds per call with findPrevKey binary search
 	 *
 	 */
 	private LeafNode<K,V> findLeaf(InternalNode<K,V> node, K key) {
-		ArrayList<K> keys = node.keys;
-		int i = node.findPrevKey(key);
+		Node<K,V> child = node.findChildNode(key);
 
-		// At this point the index i either contains rows = the last key checked
+		// At this point the variable i either contains rows = the last key checked
 		// or > than the number of keys, so it points to the final list.
-		/*
-		log.debug("index: {}, children.size(): {}", i, node.children.size());
-		log.debug("node children = {}" , node);
-		log.debug("keys: {}", keys);
-		 */
-		Node<K,V> child = node.children.get(i);
 		if (child instanceof LeafNode<?,?>) {
 			return (LeafNode<K,V>) child;
 		} else {
@@ -117,16 +109,15 @@ public class BPTree<K extends Comparable<K>,V> {
 	}
 	
 	private void updateRoot(Node<K,V> left, Node<K,V> right, K key) {
-		ArrayList<K> keys = new ArrayList<K>();
+		ArrayList<K> keys = new ArrayList<>(config.branchFactor);
 		keys.add(key);
 		
-		ArrayList<Node<K,V>> children = new ArrayList<Node<K,V>>();
+		ArrayList<Node<K,V>> children = new ArrayList<>(config.branchFactor + 1);
 		children.add(left);
 		children.add(right);
-		InternalNode<K,V> newRoot = new InternalNode<K,V>(config, keys, children);
-		right.parent = newRoot;
-		left.parent = newRoot;
-		root = newRoot;
+		root = new InternalNode<>(config, keys, children);
+		right.parent = root;
+		left.parent = root;
 		depth++;
 	}
 
@@ -137,7 +128,7 @@ public class BPTree<K extends Comparable<K>,V> {
 		 * [ [0, 1, 2, 3]      [12,14,15,16]     [20,22,23,24]    [30,32,33,34]   [90, 92, 93, 94]       [100,102] ]
 		 *
 		 * [                                                      30                                         ]
-		 * [                    [12           , 20]                |            [30, 90,                 100] ]
+		 * [                    [12           , 20]                |               [90,                 100] ]
 		 * [ [0, 1, 2, 3]           [12,14,15,16]    [20,22,23,24]    [30,32,33,34]   [90, 92, 93, 94]       [100,102] ]
 		 */
 		InternalNode<K,V> rightNode =  node.split();
@@ -152,16 +143,14 @@ public class BPTree<K extends Comparable<K>,V> {
 		}
 	}
 
-	private void propogateKeyUpwards(InternalNode<K,V> node, K oldKey, K newKey) {
+	private void propagateKeyUpwards(InternalNode<K,V> node, K oldKey, K newKey) {
 		while (node != null) {
 			int index = node.keyIndex(oldKey);
-			if (index < 0) {
-				node = node.parent;
-			} else {
-				node.keys.set(index, newKey);
-				node = node.parent;
-			}
-		}
+            if (index >= 0) {
+                node.keys.set(index, newKey);
+            }
+            node = node.parent;
+        }
 	}
 
 	/*
@@ -174,22 +163,21 @@ public class BPTree<K extends Comparable<K>,V> {
 	 */
 	public boolean rebalanceLeaves(LeafNode<K,V> leaf) {
 		// Skip rebalance if rebalance flag not set
-		if (config.rebalance == false) {
+		if (!config.rebalance) {
 			return false;
 		}
 
-		int index = leaf.parentIndex;
-		//log.info("Index: {}",index);
 		LeafNode<K,V> rightNode = null;
 		LeafNode<K,V> leftNode = null;
-		int size = leaf.records.size();
-		if (index < size -1) {
+
+		if (leaf.parentIndex < leaf.records.size() - 1) {
 			rightNode = (LeafNode<K, V>) leaf.rightNode;
 		}
-		if (index > 0) {
+		if (leaf.parentIndex > 0) {
 			leftNode =  (LeafNode<K, V>) leaf.leftNode;
 		}
 
+		boolean rval = false;
 		if (leftNode != null && leftNode.records.size() < config.maxBranchRefactor) {
 			/* Move Left single node:
 			 *                            [30]
@@ -211,8 +199,13 @@ public class BPTree<K extends Comparable<K>,V> {
 			leftNode.records.addAll(leaf.records.subList(0,freeSpace));
 			leaf.records.subList(0,freeSpace).clear();
 			K newKey = leaf.records.get(0).key;
-			propogateKeyUpwards(leaf.parent, oldKey, newKey);
-			return true;
+			propagateKeyUpwards(leaf.parent, oldKey, newKey);
+
+			if (leaf.records.size() <= config.maxBranchRefactor) {
+				return true;
+			}
+
+			rval = true;
 		}
 
 		if (rightNode != null && rightNode.records.size() < config.maxBranchRefactor) {
@@ -232,23 +225,24 @@ public class BPTree<K extends Comparable<K>,V> {
 			rightNode.records.addAll(0, leaf.records.subList(leaf.records.size() - freeSpace,leaf.records.size()));
 			leaf.records.subList(leaf.records.size() - freeSpace,leaf.records.size()).clear();
 			K newKey = rightNode.records.get(0).key;
-			propogateKeyUpwards(leaf.parent, oldKey, newKey);
+			propagateKeyUpwards(leaf.parent, oldKey, newKey);
 
 			return true;
 		}
-		return false;
+
+		return rval;
 	}
 
 	/**
-	 *
-	 * @param key
-	 * @param value
+	 * Insert key / value into B+Tree
+	 * @param key   	Key to insert
+	 * @param value		Value of Key
 	 */
 	public void insert(K key, V value) {
-		KeyValue<K,V> record = new KeyValue<K,V>(key,value);
+		KeyValue<K,V> record = new KeyValue<>(key, value);
 		if (firstLeaf == null) {
 			//log.debug("Created initial leaf node");
-			firstLeaf = new LeafNode<K,V>(config, record);
+			firstLeaf = new LeafNode<>(config, record);
 		} else {
 			if (root == null) {
 				if (firstLeaf.insert(record)) {
@@ -279,7 +273,7 @@ public class BPTree<K extends Comparable<K>,V> {
 		}
 		LeafNode<K,V> leaf = (root == null) ? firstLeaf : findLeaf(root, key);
 		ArrayList<KeyValue<K,V>> records = leaf.records;
-		//int index = binarySearch(records, key);
+
 		int index = leaf.binarySearch(key);
 		if (index < 0) {
 			return null;
@@ -334,7 +328,6 @@ public class BPTree<K extends Comparable<K>,V> {
 		stats.averageLeaf = (stats.leafItems *1.0) / stats.numLeafs;
 		stats.averageInner = (stats.innerItems *1.0) / stats.numInner;
 		stats.leafDensity = ((stats.averageLeaf / stats.branchFactor) * 10000) / 100;
-		stats.leafDensity = ((stats.averageLeaf / stats.branchFactor) * 10000) / 100;
 		return stats;
 	}
 
@@ -346,7 +339,7 @@ public class BPTree<K extends Comparable<K>,V> {
 		} else {
 			System.out.println(" no rebalancing");
 		}
-		System.out.println(" Min Leaf Size: " + config.minLeaves);
+		System.out.println(" Min Leaf Size: " + config.midLeaveRecords);
 		System.out.println("   depth:       " + stats.depth);
 		System.out.println("   Inner Nodes: " + stats.numInner + "     keys: " + stats.innerItems + "  average: " + String.format("%.4f",stats.averageInner));
 		System.out.println("    Leaf Nodes: " + stats.numLeafs + "  records: " + stats.leafItems + " average: " + String.format("%.4f", stats.averageLeaf));

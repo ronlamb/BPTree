@@ -14,7 +14,6 @@ public class Main {
     private static final Logger log = LogManager.getLogger(BPTree.class);
 
     public static void checkAll(BPTree<Integer, Double> tree, ArrayList<Integer> numbers) {
-        int errCnt = 0;
         int notFound = 0;
         int mismatch = 0;
         for (Integer number : numbers) {
@@ -45,7 +44,7 @@ public class Main {
     }
 
     public static List<Integer> orderedList(int start, int end) {
-        return Arrays.stream(IntStream.iterate(1, i-> i<=end, i->i+1).toArray()).boxed().collect(Collectors.toList());
+        return Arrays.stream(IntStream.iterate(start, i-> i<=end, i->i+1).toArray()).boxed().collect(Collectors.toList());
     }
 
     public static void runTest(BPTree<Integer, Double> tree, ArrayList<Integer> numbers) {
@@ -59,7 +58,9 @@ public class Main {
     }
 
     void runOnce() {
-        BPTree<Integer, Double> tree = new BPTree<Integer, Double>(20, 66.666);
+        BPTree<Integer, Double> tree = new BPTree<Integer, Double>(20, 66.666); // approx 68400 leaf nodes, 70 inner, 1300 keys
+        //BPTree<Integer, Double> tree = new BPTree<Integer, Double>(50, 66.666); // approx 27400 leaf nodes, 85 inner, 2700 keys
+        //BPTree<Integer, Double> tree = new BPTree<Integer, Double>(100, 66.666); // approx 13700 leaf nodes, 120 inner, 7500 keys
         List<Integer> list = orderedList(1, 1000000);
         Collections.shuffle(list);
         ArrayList<Integer> numbers = new ArrayList<>(list);

@@ -15,7 +15,7 @@ public class KeyValue<K extends Comparable<K>, V> implements Comparable<KeyValue
 	}
 
 	public String toString() {
-		return "" + key + ": " + value;
+		return key + ": " + value;
 	}
 
 	@Override
@@ -23,15 +23,17 @@ public class KeyValue<K extends Comparable<K>, V> implements Comparable<KeyValue
 		return key.compareTo(o.key);
 	}
 
-	public static ThreadLocal<KeyValue> tempKeyValue = new ThreadLocal<KeyValue>() {
+	@SuppressWarnings("rawtypes")
+	public static ThreadLocal<KeyValue> tempKeyValue = new ThreadLocal<>() {
+        @SuppressWarnings("unchecked")
 		@Override
-		protected KeyValue initialValue() {
-			return new KeyValue(null, null);
-		}
+        protected KeyValue initialValue() {
+            return new KeyValue(null, null);
+        }
 
-		@Override
-		public KeyValue get() {
-			return super.get();
-		}
-	};
+        @Override
+        public KeyValue get() {
+            return super.get();
+        }
+    };
 }

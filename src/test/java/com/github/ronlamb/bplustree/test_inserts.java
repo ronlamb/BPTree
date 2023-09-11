@@ -4,7 +4,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Test;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -12,7 +11,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class test_inserts {
     private static final Logger log = LogManager.getLogger(test_inserts.class);
@@ -24,23 +23,15 @@ public class test_inserts {
         for (Integer number : numbers) {
             Double value = tree.search(number);
             Double expected = f(number);
-            assertTrue(value != null, "Value not found for input " + number);
+            assertNotNull(value, "Value not found for input " + number);
             assertTrue(Math.abs(expected - value) <= 0.0000001, "Value " + expected + " not found for input " + number);
         }
         Statistics stats = tree.getStats();
-        assertTrue(stats.leafItems == numbers.size(), "Expected " + numbers.size() + " items but found " + stats.leafItems);
+        assertEquals(stats.leafItems, numbers.size(), "Expected " + numbers.size() + " items but found " + stats.leafItems);
     }
 
     List<Integer> orderedList(int start, int end) {
-        return Arrays.stream(IntStream.iterate(1, i-> i<=end, i->i+1).toArray()).boxed().collect(Collectors.toList());
-    }
-
-    public ArrayList<Integer> createOrderedList(int start, int stop) {
-        ArrayList<Integer> numbers = new ArrayList<>();
-        for (int i = start; i <= stop ; i++) {
-            numbers.add(i);
-        }
-        return numbers;
+        return Arrays.stream(IntStream.iterate(start, i-> i<=end, i->i+1).toArray()).boxed().collect(Collectors.toList());
     }
 
     void runTest(BPTree<Integer, Double> tree, ArrayList<Integer> numbers) {
@@ -52,14 +43,6 @@ public class test_inserts {
         tree.dumpStats();
         checkAll(tree, numbers);
     }
-
-    void testOrderedInsert() {
-        BPTree<Integer, Double> tree = new BPTree<Integer, Double>(25, 75.0);
-        ArrayList<Integer> numbers = createOrderedList(1, 10000);
-        log.info("Running testOrderedInsert");
-        runTest(tree, numbers);
-    }
-
 
     //@Test
     //Disabled temporarily to see if I can reduce the size
@@ -91,7 +74,7 @@ public class test_inserts {
                 304, 25, 624, 678, 398, 301, 632, 700, 411, 731, 149, 185, 108, 881, 910, 488, 891, 655, 823, 153, 618, 914, 658, 814,
                 665, 3, 623, 769, 239, 719, 229, 556, 813, 985, 654, 544
         ));
-        BPTree<Integer, Double> tree = new BPTree<Integer, Double>(20, 66.666);
+        BPTree<Integer, Double> tree = new BPTree<>(20, 66.666);
         log.info("Running testUnorderedInsert");
         runTest(tree, numbers);
     }
@@ -103,17 +86,17 @@ public class test_inserts {
      */
     @Test
     void testUnorderedInsert_regression_2() {
-        ArrayList<Integer> numbers = new ArrayList<Integer>(Arrays.asList(
+        ArrayList<Integer> numbers = new ArrayList<>(Arrays.asList(
                 10, -1, 20, 22, 30, 4, 5, 40, -7, 12, 13, 17, 21
         ));
-        BPTree<Integer, Double> tree = new BPTree<Integer, Double>(5);
+        BPTree<Integer, Double> tree = new BPTree<>(5);
         log.info("Running testUnorderedInsert");
         runTest(tree, numbers);
     }
 
     @Test
     void testRandomInsert() {
-        BPTree<Integer, Double> tree = new BPTree<Integer, Double>(20, 66.666);
+        BPTree<Integer, Double> tree = new BPTree<>(20, 66.666);
         List<Integer> list = orderedList(1, 1000000);
         Collections.shuffle(list);
         ArrayList<Integer> numbers = new ArrayList<>(list);
