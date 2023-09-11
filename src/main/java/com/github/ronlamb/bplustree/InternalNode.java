@@ -172,9 +172,11 @@ public class InternalNode<K extends Comparable<K>, V> extends Node<K,V> {
 		return keys.size() > config.maxKeys;
 	}
 	
+	/*
 	int middle() {
 		return (int) Math.ceil((config.branchFactor + 1) / 2.0) - 1;
 	}
+	 */
 
 	/*
 	 * Split internal node size = 5
@@ -204,13 +206,14 @@ public class InternalNode<K extends Comparable<K>, V> extends Node<K,V> {
 	 *
 	 */
 	InternalNode<K,V> split() {
-		int mid = middle();
 		// Split Inner
-		ArrayList<K> rightKeys = new ArrayList<>(keys.subList(mid, keys.size()));
+		ArrayList<K> rightKeys = new ArrayList<>(config.branchFactor);
+		rightKeys.addAll(keys.subList(config.midKeys, keys.size()));
 
-		keys.subList(mid, keys.size()).clear();
-		ArrayList<Node<K,V>> rightChildren = new ArrayList<>(children.subList(mid + 1, children.size()));
-		children.subList(mid+1, children.size()).clear();
+		keys.subList(config.midKeys, keys.size()).clear();
+		ArrayList<Node<K,V>> rightChildren = new ArrayList<>(config.branchFactor+1);
+		rightChildren.addAll(children.subList(config.midKeys + 1, children.size()));
+		children.subList(config.midKeys+1, children.size()).clear();
 		InternalNode<K,V> right = new InternalNode<>(config, rightKeys, rightChildren);
 		for (Node<K,V> child : rightChildren) {
 			// update child parents to right note
@@ -244,9 +247,6 @@ public class InternalNode<K extends Comparable<K>, V> extends Node<K,V> {
 		int index = Collections.binarySearch(keys, key);
 		if (index < 0) {
 			index = -(index+1);
-			if (index == -1) {
-				index = 0;
-			}
 		} else {
 			index++;
 		}

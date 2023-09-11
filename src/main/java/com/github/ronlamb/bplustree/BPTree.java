@@ -109,10 +109,10 @@ public class BPTree<K extends Comparable<K>,V> {
 	}
 	
 	private void updateRoot(Node<K,V> left, Node<K,V> right, K key) {
-		ArrayList<K> keys = new ArrayList<>();
+		ArrayList<K> keys = new ArrayList<>(config.branchFactor);
 		keys.add(key);
 		
-		ArrayList<Node<K,V>> children = new ArrayList<>();
+		ArrayList<Node<K,V>> children = new ArrayList<>(config.branchFactor + 1);
 		children.add(left);
 		children.add(right);
 		root = new InternalNode<>(config, keys, children);
@@ -167,15 +167,13 @@ public class BPTree<K extends Comparable<K>,V> {
 			return false;
 		}
 
-		int index = leaf.parentIndex;
-		//log.info("Index: {}",index);
 		LeafNode<K,V> rightNode = null;
 		LeafNode<K,V> leftNode = null;
-		int size = leaf.records.size();
-		if (index < size -1) {
+
+		if (leaf.parentIndex < leaf.records.size() - 1) {
 			rightNode = (LeafNode<K, V>) leaf.rightNode;
 		}
-		if (index > 0) {
+		if (leaf.parentIndex > 0) {
 			leftNode =  (LeafNode<K, V>) leaf.leftNode;
 		}
 
@@ -232,7 +230,6 @@ public class BPTree<K extends Comparable<K>,V> {
 			return true;
 		}
 
-		//return false;
 		return rval;
 	}
 
@@ -276,7 +273,7 @@ public class BPTree<K extends Comparable<K>,V> {
 		}
 		LeafNode<K,V> leaf = (root == null) ? firstLeaf : findLeaf(root, key);
 		ArrayList<KeyValue<K,V>> records = leaf.records;
-		//int index = binarySearch(records, key);
+
 		int index = leaf.binarySearch(key);
 		if (index < 0) {
 			return null;
@@ -342,7 +339,7 @@ public class BPTree<K extends Comparable<K>,V> {
 		} else {
 			System.out.println(" no rebalancing");
 		}
-		System.out.println(" Min Leaf Size: " + config.minLeaves);
+		System.out.println(" Min Leaf Size: " + config.midLeaveRecords);
 		System.out.println("   depth:       " + stats.depth);
 		System.out.println("   Inner Nodes: " + stats.numInner + "     keys: " + stats.innerItems + "  average: " + String.format("%.4f",stats.averageInner));
 		System.out.println("    Leaf Nodes: " + stats.numLeafs + "  records: " + stats.leafItems + " average: " + String.format("%.4f", stats.averageLeaf));

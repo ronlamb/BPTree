@@ -16,7 +16,7 @@ public class LeafNode<K extends Comparable<K>, V> extends Node<K,V> {
 
 	public LeafNode(BPTConfig config, KeyValue<K,V> record) {
 		this.config = config;
-		records = new ArrayList<>();
+		records = new ArrayList<>(config.branchFactor);
 		records.add(record);
 	}
 
@@ -82,9 +82,6 @@ public class LeafNode<K extends Comparable<K>, V> extends Node<K,V> {
 		int index = binarySearch(record.key);
 		if (index < 0) {
 			index = -(index+1);
-			if (index == -1) {
-				index = 0;
-			}
 		}
 
 		//log.debug("record: {}, insert at index = {}, records: {}", record, index, records);
@@ -103,15 +100,9 @@ public class LeafNode<K extends Comparable<K>, V> extends Node<K,V> {
 		return records.size() > config.branchFactor;
 	}
 
-	int middle() {
-		return (int) Math.ceil((config.branchFactor + 1) / 2.0);
-	}
-
 	public LeafNode<K, V> split() {
-		int mid = middle();
-
-		ArrayList<KeyValue<K,V>> rightRecs = new ArrayList<>(records.subList(mid, records.size()));
-		records.subList(mid , records.size()).clear();
+		ArrayList<KeyValue<K,V>> rightRecs = new ArrayList<>(records.subList(config.midKeys, records.size()));
+		records.subList(config.midKeys , records.size()).clear();
 		LeafNode<K,V> right = new LeafNode<>(config, rightRecs, parent);
 		right.leftNode = this;
 		right.rightNode = rightNode;
