@@ -22,6 +22,7 @@ public class BPTree<K extends Comparable<K>,V> {
 
     LeafNode<K,V> firstLeaf;
     InternalNode<K,V> root;
+	private int size;
     int depth;				// Depth is how deep internal nodes are
 
 	/**
@@ -143,6 +144,9 @@ public class BPTree<K extends Comparable<K>,V> {
 		}
 	}
 
+	public void delete(K key) {
+	}
+
 	private void propagateKeyUpwards(InternalNode<K,V> node, K oldKey, K newKey) {
 		while (node != null) {
 			int index = node.keyIndex(oldKey);
@@ -170,7 +174,7 @@ public class BPTree<K extends Comparable<K>,V> {
 		LeafNode<K,V> rightNode = null;
 		LeafNode<K,V> leftNode = null;
 
-		if (leaf.parentIndex < leaf.records.size() - 1) {
+		if (leaf.parentIndex < (leaf.records.size() - 1)) {
 			rightNode = (LeafNode<K, V>) leaf.rightNode;
 		}
 		if (leaf.parentIndex > 0) {
@@ -180,15 +184,15 @@ public class BPTree<K extends Comparable<K>,V> {
 		boolean rval = false;
 		if (leftNode != null && leftNode.records.size() < config.maxBranchRefactor) {
 			/* Move Left single node:
-			 *                            [30]
-			 *                   [ 20,           30 ]
-			 *            [ 10,       20,                30 ]
-			 *    [ 1, 3]  [ 10, 19]    [ 20, 22, 23, 27 ]    [ 30, 34, 35 ]  << added, 27
+			 * 							             [24]  (insert 34)
+			 * 	    [5,       10,       18]                     [30,              37]
+			 * [1,3]   [5,6,8]   [10,12]   [18,19,21]    [24,26]   [30,31,33,{34}]   [37,40]
 			 *
-			 * Becomes:                   [30]
-			 *                   [ 22,           30 ]
-			 *            [ 10,         22,                30 ]
-			 *    [ 1, 3]  [ 10, 19, 20]   [ 22, 23, 27 ]    [ 30, 34, 35 ]  << added, 27
+			 *  Left record 30 moves to previos node, and key 31 replaces 30 upwards and becomes
+			 *
+			 *  Becomes						         [24]
+			 * 	    [5,       10,       18]                        [31,           37]
+			 * [1,3]   [5,6,8]   [10,12]   [18,19,21]    [24,26,30]   [31,33,{34}]   [37,40]
 			 */
 			/* Get the number of records to copy over to fill left record to 85%
 			 * Save the current head key of the left node, then append to the left node
@@ -272,13 +276,12 @@ public class BPTree<K extends Comparable<K>,V> {
 			return null;
 		}
 		LeafNode<K,V> leaf = (root == null) ? firstLeaf : findLeaf(root, key);
-		ArrayList<KeyValue<K,V>> records = leaf.records;
 
 		int index = leaf.binarySearch(key);
 		if (index < 0) {
 			return null;
 		} else {
-			return records.get(index).value;
+			return leaf.records.get(index).value;
 		}
 	}
 	public Node<K,V> getFirstNode(Node<K,V> node) {
@@ -298,6 +301,9 @@ public class BPTree<K extends Comparable<K>,V> {
 		}
 	}
 
+	public int size() {
+		return config.size;
+	}
 	private void calcInnerStats(Statistics stats, InternalNode<K,V> node) {
 		InternalNode<K,V> inner = node;
 		while (inner != null) {

@@ -15,6 +15,8 @@ public class BPTConfig {
     boolean rebalance;
     boolean allowDuplicates;
 
+    int size;
+
     public BPTConfig(int branchFactor, double density) {
         if (density < minDensity) {
             density = minDensity;
