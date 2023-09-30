@@ -1,0 +1,5 @@
+Taycan, 90900
+Taycan Turbo, 153300
+Taycan Turbo Cross Turismo, 155900
+Taycan Sport Turismo, 136000
+Taycan Cross Turismo, 977004

@@ -1,9 +1,9 @@
 package com.github.ronlamb.perf;
 
-public class PerfKey implements Comparable<PerfKey> {
+public class CategoryKey implements Comparable<CategoryKey> {
 
     @Override
-    public int compareTo(PerfKey o) {
+    public int compareTo(CategoryKey o) {
         if (category.compareTo(o.category) != 0) {
             return category.compareTo(o.category);
         }
@@ -16,41 +16,19 @@ public class PerfKey implements Comparable<PerfKey> {
         return name.compareTo(o.name);
     }
 
-    public enum Category {
-        MOTORCYCLE,
-        CAR,
-        SEDAN,
-        SPORT_SEDAN,
-        SPORTS_CAR,
-        SUPER_SPORTS_CAR,
-        VAN,
-        SUV,
-        PLANE,
-        BOAT,
-        TRUCK,
-        RV;
-    }
-
-    public enum Quality {
-        LOW,
-        STANDARD,
-        HIGH,
-        EXPENSIVE,
-        LUXURY
-    }
     Category category;
     Quality quality;
     String manufacturer;
     String name;
 
-    public PerfKey(Category category, Quality quality, String manufacturer, String name) {
+    public CategoryKey(Category category, Quality quality, String manufacturer, String name) {
         this.category = category;
         this.quality = quality;
         this.manufacturer = manufacturer;
         this.name = name;
     }
 
-    public PerfKey() {
+    public CategoryKey() {
     }
 
     public Category getCategory() {
