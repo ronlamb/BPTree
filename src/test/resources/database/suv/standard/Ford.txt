@@ -1,0 +1,10 @@
+Bronco, 39130
+Bronco Sport, 31230
+Eco Sport, 22040
+Edge, 38365
+Escape, 28000
+Escape PHEV, 40500
+Expedition, 54555
+Expedition Max, 58555
+Explorer, 36760
+Mustang Mach-E, 42995

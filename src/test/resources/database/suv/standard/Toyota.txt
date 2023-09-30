@@ -1,0 +1,13 @@
+Highlander, 36620
+Highlander Hybrid, 40620
+Grand Highlander, 43070
+Grand Highlander Hybrid, 44670
+RAV4, 28275
+RAV4 Hybrid, 31225
+RAV4 Prime, 43090
+Corolla Cross, 23610
+Corolla Cross Hybrid, 27970
+4Runner, 40155
+Venza, 34620
+Sequoia, 60875
+bZ4X, 42000

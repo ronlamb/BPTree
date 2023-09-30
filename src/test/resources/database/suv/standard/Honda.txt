@@ -1,0 +1,5 @@
+CR-V, 28410
+CR-V Hybrid, 32950
+HR-V, 24100
+Pilot, 36300
+Passport, 41100
