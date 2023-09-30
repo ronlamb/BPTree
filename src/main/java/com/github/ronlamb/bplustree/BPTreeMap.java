@@ -1,12 +1,21 @@
 package com.github.ronlamb.bplustree;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class BPTreeMap<K extends Comparable<K>,V> implements Map<K,V> {
     BPTree<K,V> map;
 
+    public BPTreeMap() {
+        map = new BPTree<K,V>();
+    }
+
+    public BPTreeMap(int branchFactor) {
+        map = new BPTree<>(branchFactor);
+    }
+
+    public BPTreeMap(int branchFactor, double density) {
+        map = new BPTree<>(branchFactor, density);
+    }
     @Override
     public int size() {
         return map.size();
@@ -67,12 +76,16 @@ public class BPTreeMap<K extends Comparable<K>,V> implements Map<K,V> {
 
     @Override
     public void clear() {
-
+        map.clear();
     }
 
     @Override
     public Set<K> keySet() {
-        return null;
+        Set<K> set = new HashSet<>();
+        for (Map.Entry<K,V> entry : entrySet()) {
+            set.add(entry.getKey());
+        }
+        return set;
     }
 
     @Override
@@ -82,6 +95,7 @@ public class BPTreeMap<K extends Comparable<K>,V> implements Map<K,V> {
 
     @Override
     public Set<Entry<K, V>> entrySet() {
-        return null;
+        Set<Entry<K,V>> rval = new BPTreeSet<>(map);
+        return rval;
     }
 }

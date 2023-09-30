@@ -1,6 +1,8 @@
 package com.github.ronlamb.bplustree;
 
-public class KeyValue<K extends Comparable<K>, V> implements Comparable<KeyValue<K,V>> {
+import java.util.Map;
+
+public class KeyValue<K extends Comparable<K>, V> implements Comparable<KeyValue<K,V>> , Map.Entry<K,V> {
 	K key;
 	V value;
 
@@ -36,4 +38,20 @@ public class KeyValue<K extends Comparable<K>, V> implements Comparable<KeyValue
             return super.get();
         }
     };
+
+	@Override
+	public K getKey() {
+		return key;
+	}
+
+	@Override
+	public V getValue() {
+		return value;
+	}
+
+	@Override
+	public V setValue(V value) {
+		this.value = value;
+		return value;
+	}
 }

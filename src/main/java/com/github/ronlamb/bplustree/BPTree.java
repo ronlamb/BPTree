@@ -22,9 +22,12 @@ public class BPTree<K extends Comparable<K>,V> {
 
     LeafNode<K,V> firstLeaf;
     InternalNode<K,V> root;
-	private int size;
+//	private int size;
     int depth;				// Depth is how deep internal nodes are
 
+	public BPTree() {
+		initialize(10, 50.0);
+	}
 	/**
 	 * Constructor: BPTree(int branchFactor)
 	 * <p>
@@ -350,5 +353,11 @@ public class BPTree<K extends Comparable<K>,V> {
 		System.out.println("   Inner Nodes: " + stats.numInner + "     keys: " + stats.innerItems + "  average: " + String.format("%.4f",stats.averageInner));
 		System.out.println("    Leaf Nodes: " + stats.numLeafs + "  records: " + stats.leafItems + " average: " + String.format("%.4f", stats.averageLeaf));
 		System.out.println("  Leaf Density: " + String.format("%.4f", stats.leafDensity));
+	}
+
+	public void clear() {
+		this.firstLeaf = null;
+		this.root = null;
+		depth = 0;
 	}
 }
