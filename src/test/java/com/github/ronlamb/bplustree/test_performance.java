@@ -60,6 +60,8 @@ public class test_performance {
     HashMap<CategoryKey, CarInfo> hashMap = null;
     TreeMap<CategoryKey, CarInfo> treeMap = null;
 
+    ArrayList<CarInfo> cars = null;
+
     HashMap<String, PerformanceInfo> performanceInfo = new HashMap<>();
 
     @BeforeEach
@@ -68,6 +70,8 @@ public class test_performance {
         bpTreeMap = new BPTreeMap<>(100, 90);
         hashMap = new HashMap<>();
         treeMap = new TreeMap<>();
+        cars = new ArrayList<>();
+
         performanceInfo = new HashMap<String, PerformanceInfo>();
         populate();
     }
@@ -94,9 +98,7 @@ public class test_performance {
                     String name = arr[0].trim();
                     Double cost = Double.parseDouble(arr[1]);
                     CategoryKey key = new CategoryKey(category, quality, manufacturer, name);
-                    bpTreeMap.put(key, new CarInfo(category, quality, manufacturer, name, cost));
-                    hashMap.put(key, new CarInfo(category, quality, manufacturer, name, cost));
-                    treeMap.put(key, new CarInfo(category, quality, manufacturer, name, cost));
+                    cars.add(new CarInfo(category, quality, manufacturer, name, cost));
                 }
             } catch (Exception e) {
                     log.info("Error processing file: {}\n {}: {}", filePath, lineNbr, line);
@@ -130,26 +132,49 @@ public class test_performance {
 
     long entrySetSpeed(Map<CategoryKey, CarInfo> map) {
         log.info("Processing {}", map.getClass().toString());
-        int rows = 0;
         long start = System.nanoTime();
         for (Map.Entry<CategoryKey, CarInfo> entry : map.entrySet()) {
             CategoryKey key = entry.getKey();
             CarInfo value = entry.getValue();
-            rows++;
         }
         long end = System.nanoTime();
         //log.info("Read {} rows in {}", rows, showTime(end - start));
         return end - start;
     }
 
-    @Test
-    void test_performance() {
+    long insertSpeed(Map<CategoryKey, CarInfo> map) {
+        log.info("Processing {}", map.getClass().toString());
+        long start = System.nanoTime();
+        for (CarInfo car: cars) {
+            CategoryKey key = new CategoryKey(car.category, car.quality, car.manufacturer, car.name);
+            map.put(key, new CarInfo(car.category,  car.quality, car.manufacturer, car.name, car.cost));
+//            CarInfo value = entry.getValue();
+        }
+        long end = System.nanoTime();
+        //log.info("Read {} rows in {}", rows, showTime(end - start));
+        return end - start;
+    }
+
+    void timeInsert() {
+        PerformanceInfo info = new PerformanceInfo("Put");
+
+        info.hashMapTime = insertSpeed(hashMap);
+        info.treeMapTime = insertSpeed(treeMap);
+        info.btTreeMapTime = insertSpeed(bpTreeMap);
+        performanceInfo.put("Put", info);
+    }
+    void timeEntrySet() {
         PerformanceInfo info = new PerformanceInfo("EntrySet");
 
         info.hashMapTime = entrySetSpeed(hashMap);
         info.treeMapTime = entrySetSpeed(treeMap);
         info.btTreeMapTime = entrySetSpeed(bpTreeMap);
         performanceInfo.put("EntrySet", info);
+    }
+    @Test
+    void test_performance() {
+        timeInsert();
+        timeEntrySet();
         showPerformance();
     }
 
@@ -162,37 +187,4 @@ public class test_performance {
         System.out.println("\n\n");
         bpTreeMap.showStats();
     }
-//    Double checkEquals(String key, Double result) {
-//        Double value = map.get(key);
-//        log.info("map.get(\"{}\") = {}", key, value);
-//        assertEquals(value, result);
-//        return result;
-//    }
-//
-//    //Test
-//    void test_valuesExist() {
-//        checkEquals("pi", Math.PI);
-//        checkEquals("e", Math.E);
-//        Double result = checkEquals("tau", Math.PI * 2);
-//        assertEquals(0.0, Math.PI*2 - result );
-//    }
-//
-//
-//
-//    //Test
-//    void test_valuesDontExist() {
-//        checkEquals("3", null);
-//        checkEquals("pip", null);
-//    }
-//
-//    @Test
-//    void test_EntrySet() {
-//        Map<String, Double> map2 = new BPTreeMap<String, Double>(9);
-//        Set<Map.Entry<String, Double>> x = map.entrySet();
-//        for (Map.Entry<String,Double> entry : map.entrySet()) {
-//            map2.put(entry.getKey(), entry.getValue());
-//            log.info(entry);
-//        }
-//    }
-
 }

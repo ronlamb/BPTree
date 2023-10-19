@@ -1,20 +1,21 @@
 package com.github.ronlamb.perf;
 
 public class CarInfo {
-    Double cost;
-    Double commission;
+    public Double cost;
+    public Double commission;
 
-    Category category;
-    Quality quality;
-    String manufacturer;
-    String name;
+    public Category category;
+    public Quality quality;
+    public String manufacturer;
+    public String name;
 
     Double MPG;
     Double topSpeed;
 
     public CarInfo(Category category, Quality quality, String manufacturer, String name, Double cost) {
         this.cost = cost;
-        this.commission = commission;
+        this.commission = 0.0;
+        this.quality = quality;
         this.category = category;
         this.manufacturer = manufacturer;
         this.name = name;
