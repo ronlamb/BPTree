@@ -62,7 +62,8 @@ public class test_performance {
 
     ArrayList<CarInfo> cars = null;
 
-    HashMap<String, PerformanceInfo> performanceInfo = new HashMap<>();
+//    HashMap<String, PerformanceInfo> performanceInfo = new HashMap<>();
+    ArrayList<PerformanceInfo> performanceInfo = null;
 
     @BeforeEach
     void setUp() {
@@ -72,7 +73,7 @@ public class test_performance {
         treeMap = new TreeMap<>();
         cars = new ArrayList<>();
 
-        performanceInfo = new HashMap<String, PerformanceInfo>();
+        performanceInfo = new ArrayList<>();
         populate();
     }
 
@@ -148,7 +149,6 @@ public class test_performance {
         for (CarInfo car: cars) {
             CategoryKey key = new CategoryKey(car.category, car.quality, car.manufacturer, car.name);
             map.put(key, new CarInfo(car.category,  car.quality, car.manufacturer, car.name, car.cost));
-//            CarInfo value = entry.getValue();
         }
         long end = System.nanoTime();
         //log.info("Read {} rows in {}", rows, showTime(end - start));
@@ -161,7 +161,7 @@ public class test_performance {
         info.hashMapTime = insertSpeed(hashMap);
         info.treeMapTime = insertSpeed(treeMap);
         info.btTreeMapTime = insertSpeed(bpTreeMap);
-        performanceInfo.put("Put", info);
+        performanceInfo.add(info);
     }
     void timeEntrySet() {
         PerformanceInfo info = new PerformanceInfo("EntrySet");
@@ -169,7 +169,7 @@ public class test_performance {
         info.hashMapTime = entrySetSpeed(hashMap);
         info.treeMapTime = entrySetSpeed(treeMap);
         info.btTreeMapTime = entrySetSpeed(bpTreeMap);
-        performanceInfo.put("EntrySet", info);
+        performanceInfo.add(info);
     }
     @Test
     void test_performance() {
@@ -181,7 +181,7 @@ public class test_performance {
     private void showPerformance() {
         System.out.println("Stat               TreeMap time          HashMap time          BPTreeMap time");
         System.out.println("---------------    --------------------  --------------------  --------------------");
-        for (PerformanceInfo info : performanceInfo.values()) {
+        for (PerformanceInfo info : performanceInfo) {
             System.out.println(info);
         }
         System.out.println("\n\n");
