@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *
  */
 class PerformanceInfo {
+    private static final Logger log = LogManager.getLogger(PerformanceInfo.class);
     public String stat;
     public long hashMapTime;
     public long treeMapTime;
@@ -32,20 +33,15 @@ class PerformanceInfo {
 
     PerformanceInfo(String stat) {
         this.stat = stat;
+        this.hashMapTime = 0;
+        this.treeMapTime = 0;
+        this.btTreeMapTime = 0;
     }
 
     private String showTime(long l) {
-        long seconds = l / 1000000000;
-        long nanoseconds = l % 1000000000;
-        while (nanoseconds % 10 == 0) {
-            nanoseconds /= 10;
-        }
-        nanoseconds %= 10000;
-        while (nanoseconds < 1000) {
-            nanoseconds *= 10;
-        }
-        String rval = seconds + "." + nanoseconds;
-        return rval;
+//        log.info("time = {}", l);
+        double seconds = l / 1000000000.0;
+        return String.format("%.5f", seconds);
     }
 
     @Override
@@ -179,11 +175,17 @@ public class test_performance {
     }
 
     private void showPerformance() {
+        PerformanceInfo total = new PerformanceInfo("Total");
         System.out.println("Stat               TreeMap time          HashMap time          BPTreeMap time");
         System.out.println("---------------    --------------------  --------------------  --------------------");
         for (PerformanceInfo info : performanceInfo) {
             System.out.println(info);
+            total.hashMapTime += info.hashMapTime;
+            total.treeMapTime += info.treeMapTime;
+            total.btTreeMapTime += info.btTreeMapTime;
         }
+        System.out.println("---------------    --------------------  --------------------  --------------------");
+        System.out.println(total);
         System.out.println("\n\n");
         bpTreeMap.showStats();
     }
