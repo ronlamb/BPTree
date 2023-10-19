@@ -1,0 +1,10 @@
+Trax, 20400
+Trailblazer, 22100
+Equinox, 26600
+Bolt EUV, 27800
+Equinox EV, 30000
+Traverse, 34520
+Blazer, 35100
+Blazer EV, 44995
+Tahoe, 54200
+Suburban, 56900

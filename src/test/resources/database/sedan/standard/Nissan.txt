@@ -1,0 +1,5 @@
+Versa, 15980
+Sentra, 20630
+Altima, 25730
+Maxima, 38340
+LEAF, 28140

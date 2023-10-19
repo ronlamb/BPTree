@@ -17,23 +17,65 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+/**
+ * This performance test is the original reason the BPTree class was created.
+ * One of the programs I wrote originally was to load several thousand rows
+ * From a database and perform multiple transforms on the data and write it
+ * before writing.  The initial version I tried both a HashMap and TreeMap
+ *
+ */
+class PerformanceInfo {
+    public String stat;
+    public long hashMapTime;
+    public long treeMapTime;
+    public long btTreeMapTime;
+
+    PerformanceInfo(String stat) {
+        this.stat = stat;
+    }
+
+    private String showTime(long l) {
+        long seconds = l / 1000000000;
+        long nanoseconds = l % 1000000000;
+        while (nanoseconds % 10 == 0) {
+            nanoseconds /= 10;
+        }
+        nanoseconds %= 10000;
+        while (nanoseconds < 1000) {
+            nanoseconds *= 10;
+        }
+        String rval = seconds + "." + nanoseconds;
+        return rval;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%-15.15s    %20s  %20s  %20s", stat, showTime(treeMapTime), showTime(hashMapTime), showTime(btTreeMapTime));
+    }
+}
+
 public class test_performance {
     private static final Logger log = LogManager.getLogger(test_performance.class);
-    BPTreeMap<CategoryKey, CarInfo> treeMap = null;
+    BPTreeMap<CategoryKey, CarInfo> bpTreeMap = null;
     HashMap<CategoryKey, CarInfo> hashMap = null;
+    TreeMap<CategoryKey, CarInfo> treeMap = null;
 
+    HashMap<String, PerformanceInfo> performanceInfo = new HashMap<>();
 
     @BeforeEach
     void setUp() {
         log.info("setUp");
-        treeMap = new BPTreeMap<>(100);
+        bpTreeMap = new BPTreeMap<>(100, 90);
         hashMap = new HashMap<>();
+        treeMap = new TreeMap<>();
+        performanceInfo = new HashMap<String, PerformanceInfo>();
         populate();
     }
 
     void put(CategoryKey key, CarInfo value) {
-        treeMap.put(key, value);
+        bpTreeMap.put(key, value);
         hashMap.put(key, value);
+        treeMap.put(key, value);
     }
 
     File[] getDirs(String path) {
@@ -52,8 +94,9 @@ public class test_performance {
                     String name = arr[0].trim();
                     Double cost = Double.parseDouble(arr[1]);
                     CategoryKey key = new CategoryKey(category, quality, manufacturer, name);
-                    treeMap.put(key, new CarInfo(category, quality, manufacturer, name, cost));
+                    bpTreeMap.put(key, new CarInfo(category, quality, manufacturer, name, cost));
                     hashMap.put(key, new CarInfo(category, quality, manufacturer, name, cost));
+                    treeMap.put(key, new CarInfo(category, quality, manufacturer, name, cost));
                 }
             } catch (Exception e) {
                     log.info("Error processing file: {}\n {}: {}", filePath, lineNbr, line);
@@ -85,7 +128,7 @@ public class test_performance {
         }
     }
 
-    void entrySetSpeed(Map<CategoryKey, CarInfo> map) {
+    long entrySetSpeed(Map<CategoryKey, CarInfo> map) {
         log.info("Processing {}", map.getClass().toString());
         int rows = 0;
         long start = System.nanoTime();
@@ -95,24 +138,29 @@ public class test_performance {
             rows++;
         }
         long end = System.nanoTime();
-        log.info("Read {} rows in {}", rows, showTime(end - start));
-    }
-
-    private Object showTime(long l) {
-        long seconds = l / 1000000000;
-        long nanoseconds = l % 1000000000;
-        while (nanoseconds % 10 == 0) {
-            nanoseconds /= 10;
-        }
-        String rval = seconds + "." + nanoseconds;
-        return rval;
-
+        //log.info("Read {} rows in {}", rows, showTime(end - start));
+        return end - start;
     }
 
     @Test
-    void text_performance() {
-        entrySetSpeed(hashMap);
-        entrySetSpeed(treeMap);
+    void test_performance() {
+        PerformanceInfo info = new PerformanceInfo("EntrySet");
+
+        info.hashMapTime = entrySetSpeed(hashMap);
+        info.treeMapTime = entrySetSpeed(treeMap);
+        info.btTreeMapTime = entrySetSpeed(bpTreeMap);
+        performanceInfo.put("EntrySet", info);
+        showPerformance();
+    }
+
+    private void showPerformance() {
+        System.out.println("Stat               TreeMap time          HashMap time          BPTreeMap time");
+        System.out.println("---------------    --------------------  --------------------  --------------------");
+        for (PerformanceInfo info : performanceInfo.values()) {
+            System.out.println(info);
+        }
+        System.out.println("\n\n");
+        bpTreeMap.showStats();
     }
 //    Double checkEquals(String key, Double result) {
 //        Double value = map.get(key);

@@ -1,0 +1,13 @@
+IONIQ 5, 41450
+Kona, 22140
+Kona Electric, 33550
+Kona N, 34950
+NEXO, 60135
+Palisade, 35900
+Santa Fe, 28750
+Santa Fe Hybrid, 35210
+Santa Fe Plug-In Hybrid, 42410
+Tucson, 26900
+Tucson Hybrid, 31350
+Tucson Plug-In Hybrid, 37500
+Venue, 19650

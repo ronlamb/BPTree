@@ -98,4 +98,8 @@ public class BPTreeMap<K extends Comparable<K>,V> implements Map<K,V> {
         Set<Entry<K,V>> rval = new BPTreeSet<>(map);
         return rval;
     }
+
+    public void showStats() {
+        map.dumpStats();
+    }
 }

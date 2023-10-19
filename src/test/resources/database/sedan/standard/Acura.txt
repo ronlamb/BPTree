@@ -1,0 +1,6 @@
+ILX, 27300
+Integra Sedan, 31300
+TLX, 40050
+ILX Hybrid, 28900
+RL, 48200
+RLX, 54900

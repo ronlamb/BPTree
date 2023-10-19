@@ -1,0 +1,12 @@
+EV6, 42600
+EV6 GT, 61600
+Niro, 26590
+Niro EV, 39550
+Niro Plug-In Hybrid, 33840
+Seltos, 22840
+Sorento, 30090
+Sorento Hybrid, 36690
+Soul, 19890
+Sportage, 26290
+Sprortage Hybrid, 27490
+Telluride, 35990
