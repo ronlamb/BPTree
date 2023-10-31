@@ -1,0 +1,14 @@
+Grand Wagoneer, 90495
+Grand Wagoneer L, 93495
+Wagoneer, 61595
+Wagoneer L, 64595
+Cherokee, 37695
+Compass, 28400
+Grand Cherokee, 39395
+Grand Cherokee 4xe, 59865
+Grand Cherokee L, 41535
+Renegade, 27850
+Wrangler, 32095
+Wrangler 4xe Hybrid, 54735
+Wrangler Rubicon 392, 82495
+Wrangler Unlimited, 35195

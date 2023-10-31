@@ -1,0 +1,4 @@
+MDX, 49550
+RDX, 41750
+ZDX, 60000
+MDX Sport Hybrid, 53000

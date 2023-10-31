@@ -1,0 +1,15 @@
+2 Series Gran Coup3, 36600
+3 Series, 42300
+4 Series Gran Coup3, 48300
+5 Series, 57900
+7 Series, 93300
+8 Series Gran Coup3, 85000
+2 Series Coupe, 37400
+4 Series Coupe, 49900
+8 Series Coupe, 85000
+4 Series Convertable, 58100
+8 Series Convertable, 94400
+Z4, 49900
+I4, 51400
+I5, 66800
+I7, 120298

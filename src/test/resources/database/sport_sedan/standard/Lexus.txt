@@ -1,0 +1,6 @@
+RC F, 67045
+IS 500, 58270
+RC F, 67045
+LC Coupe, 94490
+LC Hybrid, 100450
+LC Convertable, 102500

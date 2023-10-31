@@ -1,0 +1,19 @@
+718 Cayman, 63400
+718 Cayman GT4, 106500
+718 Cayman GT4 RS, 149100
+718 Boxster, 75500
+718 Spyder RS, 160700
+718 Spyder, 103400
+911 Carrera, 106100
+911 Carrera Cabriolet, 118900
+911 Dakar, 222000
+911 Sport Classic, 272300
+911 Targa 4, 126200
+911 Turbo, 182900
+911 Turbo Cabriolet, 195700
+911 GT3, 169700
+911 GTRS, 223800
+Panamera, 92400
+Panamera Turbo, 186400
+Panamera Hybrid, 109000
+Panamera E-Hybrid Sport Turismo, 113000

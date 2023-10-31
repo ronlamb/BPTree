@@ -1,0 +1,10 @@
+Crown, 39950
+Prius Prime, 32350
+Prius, 27450
+GR Corolla, 36100
+Corolla, 21900
+Corolla Hybrid, 23300
+Corolla Hatchback, 23355
+Camry, 26420
+Camry Hybrid, 28855
+Mirai, 49500

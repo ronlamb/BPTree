@@ -1,0 +1,14 @@
+e-tron GT, 106500
+RS e-tron GT, 147100
+A3, 35400
+S3, 47000
+RS 3, 61700
+A4, 41200
+A4 allroad quattro, 46900
+S4, 53800
+A6, 57300
+S6, 74700
+A6 allroad quattro, 68500
+RS 6 Avant, 125800
+A8, 89900
+S8, 120600

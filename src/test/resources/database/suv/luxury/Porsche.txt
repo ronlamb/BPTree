@@ -1,0 +1,8 @@
+Macan EV, 58000
+Macan, 57500
+Cayenne, 79200
+Cayenne Coupe, 80700
+Cayenne E-Hybrid, 86500
+Cayenne E-Hybrid Coupe, 91800
+Cayenne Turbo, 135900
+Cayenne Turbo Coupe, 139500

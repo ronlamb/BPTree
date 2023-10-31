@@ -1,0 +1,6 @@
+CT4, 34395
+CT4-V, 46595
+CT4-V Blackwing, 60995
+CT5, 38195
+CT5-V, 50995
+CT5-V Blackwing, 91995
